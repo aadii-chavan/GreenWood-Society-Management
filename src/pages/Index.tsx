@@ -55,8 +55,6 @@ const Index = () => {
               onAddResident={() => setIsAddResidentOpen(true)}
               onGenerateBill={() => setIsGenerateBillOpen(true)}
               onPostNotice={() => handleAction("Post Notice")}
-              onLogMaintenance={() => setIsNewComplaintOpen(true)}
-              onAddEvent={() => handleAction("Add Event")}
               onVisitorEntry={() => setIsVisitorEntryOpen(true)}
             />
           </div>
