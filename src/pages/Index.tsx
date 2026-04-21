@@ -1,8 +1,7 @@
 import { useState } from "react";
-import { Users, IndianRupee, Receipt, MessageSquareWarning, Plus, Filter } from "lucide-react";
+import { Plus, Filter } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
 import { PageHeader } from "@/components/layout/PageHeader";
-import { StatCard } from "@/components/ui/StatCard";
 import { Button } from "@/components/ui/button";
 import { RevenueChart } from "@/components/dashboard/RevenueChart";
 import { QuickActions } from "@/components/dashboard/QuickActions";
@@ -39,40 +38,8 @@ const Index = () => {
         }
       />
 
-      {/* Stat cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 md:gap-5">
-        <StatCard
-          highlight
-          label="Total Residents"
-          value="248"
-          icon={Users}
-          delta="+12"
-          helper="this month"
-        />
-        <StatCard
-          label="Revenue Collected"
-          value="₹6.4L"
-          icon={IndianRupee}
-          delta="+8.4%"
-          helper="vs last month"
-        />
-        <StatCard
-          label="Pending Bills"
-          value="32"
-          icon={Receipt}
-          delta="-4"
-          helper="resolved"
-        />
-        <StatCard
-          label="Open Complaints"
-          value="12"
-          icon={MessageSquareWarning}
-          helper="3 urgent"
-        />
-      </div>
-
-      {/* Middle row */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mt-5">
+      {/* Dashboard Content */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         <div className="lg:col-span-2">
           <RevenueChart />
         </div>
