@@ -1,19 +1,31 @@
 import { Plus, Receipt, UserPlus, Megaphone, Wrench, ChevronRight } from "lucide-react";
 
-const actions = [
-  { label: "Add Resident", icon: UserPlus, tone: "bg-primary-soft text-primary" },
-  { label: "Generate Bill", icon: Receipt, tone: "bg-info/10 text-info" },
-  { label: "Post Notice", icon: Megaphone, tone: "bg-warning/15 text-warning" },
-  { label: "Log Maintenance", icon: Wrench, tone: "bg-destructive/10 text-destructive" },
-];
+interface QuickActionsProps {
+  onAddResident?: () => void;
+  onGenerateBill?: () => void;
+  onPostNotice?: () => void;
+  onLogMaintenance?: () => void;
+}
 
-const reminders = [
-  { title: "Society AGM", time: "Sat · 10:00 AM", color: "bg-primary" },
-  { title: "Lift Servicing", time: "Mon · 02:30 PM", color: "bg-warning" },
-  { title: "Water Tank Cleaning", time: "Wed · 09:00 AM", color: "bg-info" },
-];
+export const QuickActions = ({
+  onAddResident,
+  onGenerateBill,
+  onPostNotice,
+  onLogMaintenance
+}: QuickActionsProps) => {
+  const actions = [
+    { label: "Add Resident", icon: UserPlus, tone: "bg-primary-soft text-primary", onClick: onAddResident },
+    { label: "Generate Bill", icon: Receipt, tone: "bg-info/10 text-info", onClick: onGenerateBill },
+    { label: "Post Notice", icon: Megaphone, tone: "bg-warning/15 text-warning", onClick: onPostNotice },
+    { label: "Log Maintenance", icon: Wrench, tone: "bg-destructive/10 text-destructive", onClick: onLogMaintenance },
+  ];
 
-export const QuickActions = () => {
+  const reminders = [
+    { title: "Society AGM", time: "Sat · 10:00 AM", color: "bg-primary" },
+    { title: "Lift Servicing", time: "Mon · 02:30 PM", color: "bg-warning" },
+    { title: "Water Tank Cleaning", time: "Wed · 09:00 AM", color: "bg-info" },
+  ];
+
   return (
     <div className="surface-card p-6 flex flex-col gap-6">
       <div>
@@ -25,6 +37,7 @@ export const QuickActions = () => {
         {actions.map((a) => (
           <button
             key={a.label}
+            onClick={a.onClick}
             className="group flex flex-col items-start gap-3 p-3.5 rounded-xl bg-secondary hover:bg-accent transition-colors text-left border border-transparent hover:border-border"
           >
             <div className={`h-9 w-9 rounded-lg flex items-center justify-center ${a.tone}`}>
@@ -34,6 +47,7 @@ export const QuickActions = () => {
           </button>
         ))}
       </div>
+
 
       <div>
         <div className="flex items-center justify-between mb-3">
