@@ -11,6 +11,11 @@ import Complaints from "./pages/Complaints.tsx";
 import Visitors from "./pages/Visitors.tsx";
 import Amenities from "./pages/Amenities.tsx";
 import Notices from "./pages/Notices.tsx";
+import Login from "./pages/Login.tsx";
+import Signup from "./pages/Signup.tsx";
+import Settings from "./pages/Settings.tsx";
+import ProtectedRoute from "./components/ProtectedRoute.tsx";
+
 
 const queryClient = new QueryClient();
 
@@ -21,13 +26,75 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/residents" element={<Residents />} />
-          <Route path="/bills" element={<Bills />} />
-          <Route path="/complaints" element={<Complaints />} />
-          <Route path="/visitors" element={<Visitors />} />
-          <Route path="/amenities" element={<Amenities />} />
-          <Route path="/notices" element={<Notices />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <Index />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/residents"
+            element={
+              <ProtectedRoute>
+                <Residents />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/bills"
+            element={
+              <ProtectedRoute>
+                <Bills />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/complaints"
+            element={
+              <ProtectedRoute>
+                <Complaints />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/visitors"
+            element={
+              <ProtectedRoute>
+                <Visitors />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/amenities"
+            element={
+              <ProtectedRoute>
+                <Amenities />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/notices"
+            element={
+              <ProtectedRoute>
+                <Notices />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/settings"
+            element={
+              <ProtectedRoute>
+                <Settings />
+              </ProtectedRoute>
+            }
+          />
+
+          
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
@@ -37,3 +104,4 @@ const App = () => (
 );
 
 export default App;
+

@@ -1,9 +1,22 @@
+import { useState } from "react";
 import { CrudPage } from "@/components/layout/CrudPage";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { Button } from "@/components/ui/button";
-import { Mail, Phone, MoreHorizontal, Search } from "lucide-react";
+import { Mail, Phone, MoreHorizontal, Search, UserPlus } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { toast } from "sonner";
 
-const residents = [
+const initialResidents = [
   { name: "Priya Sharma", flat: "B-1204", phone: "+91 98201 23456", email: "priya.s@mail.com", type: "Owner", status: "active" },
   { name: "Rohan Mehta", flat: "A-301", phone: "+91 99800 11223", email: "rohan.m@mail.com", type: "Tenant", status: "active" },
   { name: "Ananya Iyer", flat: "C-805", phone: "+91 90040 88121", email: "ananya@mail.com", type: "Owner", status: "active" },
@@ -14,13 +27,52 @@ const residents = [
 ];
 
 const Residents = () => {
+  const [residents, setResidents] = useState(initialResidents);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [newResident, setNewResident] = useState({
+    name: "",
+    flat: "",
+    phone: "",
+    email: "",
+    type: "Owner",
+    status: "active"
+  });
+
+  const filteredResidents = residents.filter(r => 
+    r.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    r.flat.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    r.email.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const handleAddResident = () => {
+    if (!newResident.name || !newResident.flat) {
+      toast.error("Please fill in all required fields");
+      return;
+    }
+    setResidents([newResident, ...residents]);
+    setIsAddDialogOpen(false);
+    setNewResident({ name: "", flat: "", phone: "", email: "", type: "Owner", status: "active" });
+    toast.success(`${newResident.name} added successfully!`);
+  };
+
   return (
-    <CrudPage title="Residents" subtitle="Manage all 248 residents across 4 towers." addLabel="Add resident">
+    <CrudPage 
+      title="Residents" 
+      subtitle={`Manage all ${residents.length} residents across 4 towers.`} 
+      addLabel="Add resident"
+      onAdd={() => setIsAddDialogOpen(true)}
+    >
       <div className="surface-card p-0 overflow-hidden">
         <div className="p-5 flex flex-col md:flex-row md:items-center gap-3 border-b border-border/60">
           <div className="flex-1 flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-secondary">
             <Search className="h-4 w-4 text-muted-foreground" />
-            <input className="flex-1 bg-transparent outline-none text-sm" placeholder="Search by name, flat, email…" />
+            <input 
+              className="flex-1 bg-transparent outline-none text-sm" 
+              placeholder="Search by name, flat, email…" 
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
           </div>
           <div className="flex gap-2">
             {["All", "Owners", "Tenants", "Inactive"].map((t, i) => (
@@ -48,8 +100,8 @@ const Residents = () => {
               </tr>
             </thead>
             <tbody>
-              {residents.map((r) => (
-                <tr key={r.flat} className="border-t border-border/60 hover:bg-secondary/40 transition-colors">
+              {filteredResidents.map((r) => (
+                <tr key={r.flat + r.name} className="border-t border-border/60 hover:bg-secondary/40 transition-colors">
                   <td className="px-5 py-4">
                     <div className="flex items-center gap-3">
                       <div className="h-9 w-9 rounded-full bg-primary-soft text-primary flex items-center justify-center text-xs font-semibold">
@@ -80,12 +132,117 @@ const Residents = () => {
                   </td>
                 </tr>
               ))}
+              {filteredResidents.length === 0 && (
+                <tr>
+                  <td colSpan={6} className="px-5 py-20 text-center text-muted-foreground">
+                    No residents found matching your search.
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
       </div>
+
+      <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+        <DialogContent className="sm:max-w-[480px] rounded-3xl border-border/60 bg-card/95 backdrop-blur-xl p-0 overflow-hidden shadow-2xl">
+          <div className="p-8 pb-0">
+            <DialogHeader>
+              <div className="h-12 w-12 rounded-2xl gradient-primary flex items-center justify-center shadow-glow mb-4">
+                <UserPlus className="h-6 w-6 text-primary-foreground" />
+              </div>
+              <DialogTitle className="text-2xl font-bold">Add New Resident</DialogTitle>
+              <DialogDescription className="text-[14px]">
+                Enter the details of the new resident to add them to the system.
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="grid gap-5 py-6">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="name" className="text-[13px] font-semibold">Full Name</Label>
+                  <Input 
+                    id="name" 
+                    placeholder="e.g. John Doe" 
+                    className="bg-secondary/40 border-border/60 rounded-xl"
+                    value={newResident.name}
+                    onChange={(e) => setNewResident({...newResident, name: e.target.value})}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="flat" className="text-[13px] font-semibold">Flat Number</Label>
+                  <Input 
+                    id="flat" 
+                    placeholder="e.g. A-102" 
+                    className="bg-secondary/40 border-border/60 rounded-xl"
+                    value={newResident.flat}
+                    onChange={(e) => setNewResident({...newResident, flat: e.target.value})}
+                  />
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="phone" className="text-[13px] font-semibold">Phone Number</Label>
+                  <Input 
+                    id="phone" 
+                    placeholder="+91 00000 00000" 
+                    className="bg-secondary/40 border-border/60 rounded-xl"
+                    value={newResident.phone}
+                    onChange={(e) => setNewResident({...newResident, phone: e.target.value})}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="email" className="text-[13px] font-semibold">Email Address</Label>
+                  <Input 
+                    id="email" 
+                    type="email" 
+                    placeholder="name@example.com" 
+                    className="bg-secondary/40 border-border/60 rounded-xl"
+                    value={newResident.email}
+                    onChange={(e) => setNewResident({...newResident, email: e.target.value})}
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="type" className="text-[13px] font-semibold">Resident Type</Label>
+                <Select 
+                  value={newResident.type} 
+                  onValueChange={(v) => setNewResident({...newResident, type: v})}
+                >
+                  <SelectTrigger className="bg-secondary/40 border-border/60 rounded-xl">
+                    <SelectValue placeholder="Select type" />
+                  </SelectTrigger>
+                  <SelectContent className="rounded-xl border-border/60">
+                    <SelectItem value="Owner">Owner</SelectItem>
+                    <SelectItem value="Tenant">Tenant</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </div>
+
+          <div className="p-8 bg-secondary/30 border-t border-border/60 flex gap-3">
+            <Button 
+              variant="outline" 
+              className="flex-1 rounded-xl h-11 font-semibold"
+              onClick={() => setIsAddDialogOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button 
+              className="flex-1 rounded-xl h-11 bg-primary hover:bg-primary/90 shadow-glow font-semibold"
+              onClick={handleAddResident}
+            >
+              Add Resident
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </CrudPage>
   );
 };
 
 export default Residents;
+
