@@ -19,9 +19,9 @@ const Bills = () => {
   return (
     <CrudPage title="Bills" subtitle="Generate invoices and track maintenance dues." addLabel="Generate bill">
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-6">
-        <StatCard highlight label="Collected this month" value="₹6.4L" icon={IndianRupee} delta="+8.4%" helper="vs last month" />
-        <StatCard label="Pending" value="32" icon={Receipt} helper="₹1.4L outstanding" />
-        <StatCard label="Overdue" value="8" icon={AlertCircle} helper="needs follow-up" />
+        <StatCard size="sm" highlight label="Collected this month" value="₹6.4L" icon={IndianRupee} delta="+8.4%" helper="vs last month" />
+        <StatCard size="sm" label="Pending" value="32" icon={Receipt} helper="₹1.4L outstanding" />
+        <StatCard size="sm" label="Overdue" value="8" icon={AlertCircle} helper="needs follow-up" />
       </div>
 
       <div className="surface-card overflow-hidden">

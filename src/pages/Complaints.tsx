@@ -19,9 +19,9 @@ const Complaints = () => {
   return (
     <CrudPage title="Complaints" subtitle="Track and resolve resident grievances quickly." addLabel="New complaint">
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-6">
-        <StatCard highlight label="Open" value="12" icon={MessageSquareWarning} helper="3 urgent" />
-        <StatCard label="In Progress" value="7" icon={Clock} helper="avg 2.4 days" />
-        <StatCard label="Resolved" value="64" icon={CheckCircle2} delta="+12" helper="this month" />
+        <StatCard size="sm" highlight label="Open" value="12" icon={MessageSquareWarning} helper="3 urgent" />
+        <StatCard size="sm" label="In Progress" value="7" icon={Clock} helper="avg 2.4 days" />
+        <StatCard size="sm" label="Resolved" value="64" icon={CheckCircle2} delta="+12" helper="this month" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">

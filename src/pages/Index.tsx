@@ -5,7 +5,6 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { Button } from "@/components/ui/button";
 import { RevenueChart } from "@/components/dashboard/RevenueChart";
 import { QuickActions } from "@/components/dashboard/QuickActions";
-import { DashboardCalendar } from "@/components/dashboard/DashboardCalendar";
 import { RecentActivity } from "@/components/dashboard/RecentActivity";
 import { AddResidentDialog } from "@/components/dashboard/AddResidentDialog";
 import { toast } from "sonner";
@@ -39,24 +38,27 @@ const Index = () => {
       />
 
       {/* Dashboard Content */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-        {/* Main Column */}
-        <div className="lg:col-span-2 space-y-5">
-          <RevenueChart />
-          <RecentActivity />
+      <div className="flex flex-col gap-5">
+        {/* Top Row: Chart & Actions */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+          <div className="lg:col-span-2">
+            <RevenueChart />
+          </div>
+          <div className="lg:col-span-1">
+            <QuickActions 
+              onAddResident={() => setIsAddResidentOpen(true)}
+              onGenerateBill={() => handleAction("Generate Bill")}
+              onPostNotice={() => handleAction("Post Notice")}
+              onLogMaintenance={() => handleAction("Log Maintenance")}
+              onAddEvent={() => handleAction("Add Event")}
+              onVisitorEntry={() => handleAction("Visitor Entry")}
+            />
+          </div>
         </div>
 
-        {/* Sidebar Column */}
-        <div className="space-y-5">
-          <QuickActions 
-            onAddResident={() => setIsAddResidentOpen(true)}
-            onGenerateBill={() => handleAction("Generate Bill")}
-            onPostNotice={() => handleAction("Post Notice")}
-            onLogMaintenance={() => handleAction("Log Maintenance")}
-            onAddEvent={() => handleAction("Add Event")}
-            onVisitorEntry={() => handleAction("Visitor Entry")}
-          />
-          <DashboardCalendar />
+        {/* Bottom Row: Full Width Activity */}
+        <div className="w-full">
+          <RecentActivity />
         </div>
       </div>
 

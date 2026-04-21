@@ -15,9 +15,9 @@ const Visitors = () => {
   return (
     <CrudPage title="Visitors" subtitle="Real-time gate log and visitor approvals." addLabel="Add visitor">
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-6">
-        <StatCard highlight label="Visitors today" value="42" icon={UserPlus} delta="+8" helper="vs yesterday" />
-        <StatCard label="Currently inside" value="11" icon={LogIn} helper="9 expected to leave by 6 PM" />
-        <StatCard label="Vehicles parked" value="6" icon={Car} helper="2 guest slots free" />
+        <StatCard size="sm" highlight label="Visitors today" value="42" icon={UserPlus} delta="+8" helper="vs yesterday" />
+        <StatCard size="sm" label="Currently inside" value="11" icon={LogIn} helper="9 expected to leave by 6 PM" />
+        <StatCard size="sm" label="Vehicles parked" value="6" icon={Car} helper="2 guest slots free" />
       </div>
 
       <div className="surface-card overflow-hidden">

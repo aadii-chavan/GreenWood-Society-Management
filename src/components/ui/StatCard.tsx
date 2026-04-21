@@ -9,6 +9,7 @@ interface StatCardProps {
   icon?: LucideIcon;
   highlight?: boolean;
   trend?: "up" | "down";
+  size?: "default" | "sm";
 }
 
 export const StatCard = ({
@@ -19,13 +20,15 @@ export const StatCard = ({
   icon: Icon,
   highlight,
   trend = "up",
+  size = "default",
 }: StatCardProps) => {
   const TrendIcon = trend === "up" ? TrendingUp : TrendingDown;
 
   return (
     <div
       className={cn(
-        "group relative overflow-hidden rounded-[22px] p-5 md:p-6 border transition-all duration-300 hover:-translate-y-0.5",
+        "group relative overflow-hidden rounded-[22px] transition-all duration-300 hover:-translate-y-0.5 border",
+        size === "sm" ? "p-4 md:p-4.5" : "p-5 md:p-6",
         highlight
           ? "gradient-primary text-primary-foreground border-transparent shadow-glow"
           : "bg-card border-border/70 shadow-soft hover:shadow-card hover:border-border"
@@ -76,7 +79,8 @@ export const StatCard = ({
 
       <p
         className={cn(
-          "display-text relative mt-7 text-[38px] md:text-[44px] font-bold leading-none tracking-tight tabular-nums"
+          "display-text relative font-bold leading-none tracking-tight tabular-nums",
+          size === "sm" ? "mt-5 text-[28px] md:text-[32px]" : "mt-7 text-[38px] md:text-[44px]"
         )}
       >
         {value}
@@ -85,7 +89,8 @@ export const StatCard = ({
       {(delta || helper) && (
         <div
           className={cn(
-            "relative mt-5 inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-[11.5px] font-medium",
+            "relative inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-[11.5px] font-medium",
+            size === "sm" ? "mt-4" : "mt-5",
             highlight
               ? "bg-primary-foreground/15 text-primary-foreground"
               : trend === "up"
