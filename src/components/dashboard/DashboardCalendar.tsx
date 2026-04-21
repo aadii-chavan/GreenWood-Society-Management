@@ -1,9 +1,14 @@
 import { Calendar } from "@/components/ui/calendar";
 import { useState } from "react";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Plus } from "lucide-react";
+import { toast } from "sonner";
 
 export const DashboardCalendar = () => {
   const [date, setDate] = useState<Date | undefined>(new Date());
+
+  const handleAddEvent = () => {
+    toast.info("Add Event functionality coming soon!");
+  };
 
   return (
     <div className="surface-card p-6 flex flex-col gap-6 h-full">
@@ -12,9 +17,17 @@ export const DashboardCalendar = () => {
           <p className="eyebrow">Schedule</p>
           <h3 className="display-text text-[19px] font-bold mt-1.5">Society Calendar</h3>
         </div>
-        <button className="h-9 w-9 rounded-xl bg-secondary flex items-center justify-center hover:bg-accent transition-colors">
-          <ChevronRight className="h-4 w-4 text-muted-foreground" />
-        </button>
+        <div className="flex items-center gap-2">
+          <button 
+            onClick={handleAddEvent}
+            className="h-9 w-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center hover:bg-primary/20 transition-colors"
+          >
+            <Plus className="h-4 w-4" />
+          </button>
+          <button className="h-9 w-9 rounded-xl bg-secondary flex items-center justify-center hover:bg-accent transition-colors">
+            <ChevronRight className="h-4 w-4 text-muted-foreground" />
+          </button>
+        </div>
       </div>
 
       <div className="flex-1 flex flex-col items-center justify-center py-2">

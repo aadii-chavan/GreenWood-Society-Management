@@ -53,6 +53,8 @@ const Index = () => {
             onGenerateBill={() => handleAction("Generate Bill")}
             onPostNotice={() => handleAction("Post Notice")}
             onLogMaintenance={() => handleAction("Log Maintenance")}
+            onAddEvent={() => handleAction("Add Event")}
+            onVisitorEntry={() => handleAction("Visitor Entry")}
           />
           <DashboardCalendar />
         </div>

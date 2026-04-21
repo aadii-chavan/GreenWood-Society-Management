@@ -1,23 +1,29 @@
-import { Receipt, UserPlus, Megaphone, Wrench } from "lucide-react";
+import { Receipt, UserPlus, Megaphone, Wrench, CalendarPlus, UserCheck } from "lucide-react";
 
 interface QuickActionsProps {
   onAddResident?: () => void;
   onGenerateBill?: () => void;
   onPostNotice?: () => void;
   onLogMaintenance?: () => void;
+  onAddEvent?: () => void;
+  onVisitorEntry?: () => void;
 }
 
 export const QuickActions = ({
   onAddResident,
   onGenerateBill,
   onPostNotice,
-  onLogMaintenance
+  onLogMaintenance,
+  onAddEvent,
+  onVisitorEntry
 }: QuickActionsProps) => {
   const actions = [
     { label: "Add Resident", icon: UserPlus, tone: "bg-primary-soft text-primary", onClick: onAddResident },
     { label: "Generate Bill", icon: Receipt, tone: "bg-info/10 text-info", onClick: onGenerateBill },
     { label: "Post Notice", icon: Megaphone, tone: "bg-warning/15 text-warning", onClick: onPostNotice },
     { label: "Log Maintenance", icon: Wrench, tone: "bg-destructive/10 text-destructive", onClick: onLogMaintenance },
+    { label: "Add Event", icon: CalendarPlus, tone: "bg-primary/10 text-primary", onClick: onAddEvent },
+    { label: "Visitor Entry", icon: UserCheck, tone: "bg-success/10 text-success", onClick: onVisitorEntry },
   ];
 
   return (
