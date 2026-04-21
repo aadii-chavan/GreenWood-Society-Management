@@ -8,7 +8,6 @@ import {
   Dumbbell,
   Megaphone,
   Settings,
-  HelpCircle,
   Building2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -26,7 +25,6 @@ const mainNav = [
 
 const generalNav = [
   { to: "/settings", label: "Settings", icon: Settings },
-  { to: "/help", label: "Help & Support", icon: HelpCircle },
 ];
 
 export const Sidebar = () => {
