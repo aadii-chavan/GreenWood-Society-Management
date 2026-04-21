@@ -9,12 +9,14 @@ import { RecentActivity } from "@/components/dashboard/RecentActivity";
 import { AddResidentDialog } from "@/components/dashboard/AddResidentDialog";
 import { GenerateBillDialog } from "@/components/dashboard/GenerateBillDialog";
 import { NewComplaintDialog } from "@/components/dashboard/NewComplaintDialog";
+import { AddVisitorDialog } from "@/components/dashboard/AddVisitorDialog";
 import { toast } from "sonner";
 
 const Index = () => {
   const [isAddResidentOpen, setIsAddResidentOpen] = useState(false);
   const [isGenerateBillOpen, setIsGenerateBillOpen] = useState(false);
   const [isNewComplaintOpen, setIsNewComplaintOpen] = useState(false);
+  const [isVisitorEntryOpen, setIsVisitorEntryOpen] = useState(false);
 
   const handleAction = (name: string) => {
     toast.info(`${name} action enabled! Form coming soon.`);
@@ -55,7 +57,7 @@ const Index = () => {
               onPostNotice={() => handleAction("Post Notice")}
               onLogMaintenance={() => setIsNewComplaintOpen(true)}
               onAddEvent={() => handleAction("Add Event")}
-              onVisitorEntry={() => handleAction("Visitor Entry")}
+              onVisitorEntry={() => setIsVisitorEntryOpen(true)}
             />
           </div>
         </div>
@@ -79,6 +81,11 @@ const Index = () => {
       <NewComplaintDialog 
         open={isNewComplaintOpen} 
         onOpenChange={setIsNewComplaintOpen} 
+      />
+
+      <AddVisitorDialog 
+        open={isVisitorEntryOpen} 
+        onOpenChange={setIsVisitorEntryOpen} 
       />
     </AppShell>
   );

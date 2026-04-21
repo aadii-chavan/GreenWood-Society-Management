@@ -1,9 +1,11 @@
+import { useState } from "react";
 import { CrudPage } from "@/components/layout/CrudPage";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { StatCard } from "@/components/ui/StatCard";
 import { UserPlus, LogIn, LogOut, Car } from "lucide-react";
+import { AddVisitorDialog } from "@/components/dashboard/AddVisitorDialog";
 
-const visitors = [
+const initialVisitors = [
   { name: "Amazon Delivery", purpose: "Package delivery", host: "B-1204", in: "10:42", out: "10:48", vehicle: "MH-12-AB-4421", status: "out" },
   { name: "Dr. Kapoor", purpose: "Doctor visit", host: "A-301", in: "11:15", out: "—", vehicle: "MH-01-XY-1023", status: "in" },
   { name: "Plumber — Ramesh", purpose: "Maintenance", host: "C-805", in: "09:00", out: "10:30", vehicle: "—", status: "out" },
@@ -12,13 +14,40 @@ const visitors = [
 ];
 
 const Visitors = () => {
+  const [isAddOpen, setIsAddOpen] = useState(false);
+  const [visitors, setVisitors] = useState(initialVisitors);
+
+  const handleAdd = (newV: any) => {
+    const entry = {
+      name: newV.name,
+      purpose: newV.purpose,
+      host: newV.host.split(" (")[0],
+      vehicle: newV.vehicle || "—",
+      in: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }),
+      out: "—",
+      status: "in"
+    };
+    setVisitors([entry, ...visitors]);
+  };
+
   return (
-    <CrudPage title="Visitors" subtitle="Real-time gate log and visitor approvals." addLabel="Add visitor">
+    <CrudPage 
+      title="Visitors" 
+      subtitle="Real-time gate log and visitor approvals." 
+      addLabel="Add visitor"
+      onAdd={() => setIsAddOpen(true)}
+    >
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-6">
         <StatCard size="sm" highlight label="Visitors today" value="42" icon={UserPlus} delta="+8" helper="vs yesterday" />
         <StatCard size="sm" label="Currently inside" value="11" icon={LogIn} helper="9 expected to leave by 6 PM" />
         <StatCard size="sm" label="Vehicles parked" value="6" icon={Car} helper="2 guest slots free" />
       </div>
+
+      <AddVisitorDialog 
+        open={isAddOpen} 
+        onOpenChange={setIsAddOpen} 
+        onAdd={handleAdd}
+      />
 
       <div className="surface-card overflow-hidden">
         <div className="overflow-x-auto">
