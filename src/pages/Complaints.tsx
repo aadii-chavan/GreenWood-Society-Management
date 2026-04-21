@@ -1,38 +1,55 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { CrudPage } from "@/components/layout/CrudPage";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { MessageSquareWarning, Clock, CheckCircle2 } from "lucide-react";
 import { StatCard } from "@/components/ui/StatCard";
 import { NewComplaintDialog } from "@/components/dashboard/NewComplaintDialog";
-
-const initialComplaints = [
-  { id: "#C-0421", title: "Water leakage in ceiling", flat: "A-301", by: "Rohan Mehta", category: "Plumbing", priority: "high", status: "open", time: "2h ago" },
-  { id: "#C-0420", title: "Lift making noise", flat: "B-1204", by: "Priya Sharma", category: "Electrical", priority: "medium", status: "progress", time: "5h ago" },
-  { id: "#C-0419", title: "Garbage not collected", flat: "C-805", by: "Ananya Iyer", category: "Housekeeping", priority: "low", status: "resolved", time: "1d ago" },
-  { id: "#C-0418", title: "Parking dispute — slot 42", flat: "D-110", by: "Vikram Patel", category: "Parking", priority: "medium", status: "open", time: "1d ago" },
-  { id: "#C-0417", title: "Common area lights flickering", flat: "B-602", by: "Sneha Nair", category: "Electrical", priority: "high", status: "progress", time: "2d ago" },
-];
+import { toast } from "sonner";
 
 const pTone = (p: string) => p === "high" ? "destructive" : p === "medium" ? "warning" : "info";
 const sTone = (s: string) => s === "resolved" ? "success" : s === "progress" ? "info" : "warning";
-const sLabel = (s: string) => s === "progress" ? "In Progress" : s[0].toUpperCase() + s.slice(1);
+const sLabel = (s: string) => s === "progress" ? "In Progress" : s[0]?.toUpperCase() + s.slice(1);
 
 const Complaints = () => {
   const [isNewOpen, setIsNewOpen] = useState(false);
-  const [complaints, setComplaints] = useState(initialComplaints);
+  const [complaints, setComplaints] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const handleSubmit = (newC: any) => {
-    const complaint = {
-      id: `#C-0${422 + complaints.length}`,
-      title: newC.title,
-      category: newC.category,
-      priority: newC.priority,
-      status: "open",
-      time: "Just now",
-      by: newC.resident.split(" (")[0],
-      flat: newC.resident.split("(")[1].replace(")", "")
-    };
-    setComplaints([complaint, ...complaints]);
+  useEffect(() => {
+    fetchComplaints();
+  }, []);
+
+  const fetchComplaints = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/api/complaints");
+      const data = await response.json();
+      setComplaints(data);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching complaints:", error);
+      setLoading(false);
+    }
+  };
+
+  const handleSubmit = async (newC: any) => {
+    try {
+        await fetch("http://localhost:5000/api/complaints", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                id: `#C-0${Math.floor(Math.random() * 1000)}`,
+                resident_id: 1, // Default resident
+                title: newC.title,
+                category: newC.category,
+                priority: newC.priority,
+                status: "open"
+            })
+        });
+        fetchComplaints();
+        toast.success("Complaint logged!");
+    } catch (error) {
+        toast.error("Failed to log complaint");
+    }
   };
 
   return (
@@ -55,7 +72,7 @@ const Complaints = () => {
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-        {complaints.map((c) => (
+        {complaints.map((c: any) => (
           <div key={c.id} className="surface-card surface-card-hover p-5">
             <div className="flex items-start justify-between gap-4">
               <div className="flex-1">

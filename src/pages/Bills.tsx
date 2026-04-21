@@ -1,36 +1,57 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { CrudPage } from "@/components/layout/CrudPage";
 import { StatCard } from "@/components/ui/StatCard";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { IndianRupee, Receipt, AlertCircle, MoreHorizontal } from "lucide-react";
 import { GenerateBillDialog } from "@/components/dashboard/GenerateBillDialog";
-
-const billsData = [
-  { id: "INV-2025-0421", flat: "B-1204", resident: "Priya Sharma", amount: "₹4,500", due: "30 Apr 2026", status: "paid" },
-  { id: "INV-2025-0420", flat: "A-301", resident: "Rohan Mehta", amount: "₹4,500", due: "30 Apr 2026", status: "pending" },
-  { id: "INV-2025-0419", flat: "C-805", resident: "Ananya Iyer", amount: "₹5,200", due: "28 Apr 2026", status: "paid" },
-  { id: "INV-2025-0418", flat: "B-602", resident: "Sneha Nair", amount: "₹4,500", due: "15 Apr 2026", status: "overdue" },
-  { id: "INV-2025-0417", flat: "D-110", resident: "Vikram Patel", amount: "₹3,800", due: "10 Apr 2026", status: "overdue" },
-  { id: "INV-2025-0416", flat: "A-1002", resident: "Arjun Kapoor", amount: "₹5,200", due: "05 May 2026", status: "pending" },
-];
-
-const tone = (s: string) => s === "paid" ? "success" : s === "overdue" ? "destructive" : "warning";
+import { toast } from "sonner";
 
 const Bills = () => {
   const [isGenerateOpen, setIsGenerateOpen] = useState(false);
-  const [bills, setBills] = useState(billsData);
+  const [bills, setBills] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const handleGenerate = (newBill: any) => {
-    const bill = {
-      id: `INV-2025-0${422 + bills.length}`,
-      resident: newBill.resident.split(" (")[0],
-      flat: newBill.resident.split("(")[1].replace(")", ""),
-      amount: `₹${Number(newBill.amount).toLocaleString()}`,
-      due: "30 May 2026",
-      status: "pending"
-    };
-    setBills([bill, ...bills]);
+  useEffect(() => {
+    fetchBills();
+  }, []);
+
+  const fetchBills = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/api/bills");
+      const data = await response.json();
+      setBills(data);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching bills:", error);
+      setLoading(false);
+    }
+  };
+
+  const handleGenerate = async (newBill: any) => {
+    try {
+        await fetch("http://localhost:5000/api/bills", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                id: `INV-2025-0${Math.floor(Math.random() * 1000)}`,
+                resident_id: 1, // Defaulting to first resident for simplicity
+                amount: newBill.amount,
+                due_date: "30 May 2026",
+                status: "pending"
+            })
+        });
+        fetchBills();
+        toast.success("Bill generated successfully!");
+    } catch (error) {
+        toast.error("Failed to generate bill");
+    }
+  };
+
+  const tone = (status: string): "success" | "warning" | "destructive" => {
+    if (status === "paid") return "success";
+    if (status === "pending") return "warning";
+    return "destructive";
   };
 
   return (
@@ -66,15 +87,15 @@ const Bills = () => {
               </tr>
             </thead>
             <tbody>
-              {bills.map((b) => (
+              {bills.map((b: any) => (
                 <tr key={b.id} className="border-t border-border/60 hover:bg-secondary/40 transition-colors">
                   <td className="px-5 py-4 font-semibold">{b.id}</td>
                   <td className="px-5 py-4">
-                    <p className="font-semibold">{b.resident}</p>
-                    <p className="text-xs text-muted-foreground">Flat {b.flat}</p>
+                    <p className="font-semibold">{b.resident_name}</p>
+                    <p className="text-xs text-muted-foreground">Flat {b.unit_number}</p>
                   </td>
-                  <td className="px-5 py-4 font-semibold tabular-nums">{b.amount}</td>
-                  <td className="px-5 py-4 text-muted-foreground">{b.due}</td>
+                  <td className="px-5 py-4 font-semibold tabular-nums">₹{Number(b.amount).toLocaleString()}</td>
+                  <td className="px-5 py-4 text-muted-foreground">{b.due_date}</td>
                   <td className="px-5 py-4">
                     <StatusBadge tone={tone(b.status)}>
                       {b.status[0].toUpperCase() + b.status.slice(1)}

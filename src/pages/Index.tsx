@@ -1,5 +1,6 @@
-import { useState } from "react";
-import { Plus, Filter } from "lucide-react";
+import { useState, useEffect } from "react";
+import { StatCard } from "@/components/ui/StatCard";
+import { Users, IndianRupee, MessageSquareWarning, ShieldCheck, Plus, Filter } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Button } from "@/components/ui/button";
@@ -14,6 +15,35 @@ import { AddNoticeDialog } from "@/components/dashboard/AddNoticeDialog";
 import { toast } from "sonner";
 
 const Index = () => {
+  const [stats, setStats] = useState({
+    residents: 0,
+    bills: 0,
+    complaints: 0
+  });
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const [resRes, resBills, resComp] = await Promise.all([
+          fetch("http://localhost:5000/api/residents"),
+          fetch("http://localhost:5000/api/bills"),
+          fetch("http://localhost:5000/api/complaints")
+        ]);
+        const residents = await resRes.json();
+        const bills = await resBills.json();
+        const complaints = await resComp.json();
+        
+        setStats({
+          residents: residents.length,
+          bills: bills.length,
+          complaints: complaints.length
+        });
+      } catch (error) {
+        console.error("Error fetching dashboard stats:", error);
+      }
+    };
+    fetchStats();
+  }, []);
   const [isAddResidentOpen, setIsAddResidentOpen] = useState(false);
   const [isGenerateBillOpen, setIsGenerateBillOpen] = useState(false);
   const [isNewComplaintOpen, setIsNewComplaintOpen] = useState(false);
@@ -48,6 +78,12 @@ const Index = () => {
       {/* Dashboard Content */}
       <div className="flex flex-col gap-5">
         {/* Top Row: Chart & Actions */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+          <StatCard highlight label="Total Residents" value={stats.residents.toString()} icon={Users} delta="+4" helper="this month" />
+          <StatCard label="Pending Bills" value={stats.bills.toString()} icon={IndianRupee} delta="+2" helper="₹1.4L outstanding" />
+          <StatCard label="Active Complaints" value={stats.complaints.toString()} icon={MessageSquareWarning} delta="-5" helper="3 urgent" />
+          <StatCard label="Gate Entries" value="42" icon={ShieldCheck} delta="+8" helper="today" />
+        </div>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
           <div className="lg:col-span-2">
             <RevenueChart />

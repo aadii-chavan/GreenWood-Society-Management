@@ -1,33 +1,51 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { CrudPage } from "@/components/layout/CrudPage";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { StatCard } from "@/components/ui/StatCard";
 import { UserPlus, LogIn, LogOut, Car } from "lucide-react";
 import { AddVisitorDialog } from "@/components/dashboard/AddVisitorDialog";
-
-const initialVisitors = [
-  { name: "Amazon Delivery", purpose: "Package delivery", host: "B-1204", in: "10:42", out: "10:48", vehicle: "MH-12-AB-4421", status: "out" },
-  { name: "Dr. Kapoor", purpose: "Doctor visit", host: "A-301", in: "11:15", out: "—", vehicle: "MH-01-XY-1023", status: "in" },
-  { name: "Plumber — Ramesh", purpose: "Maintenance", host: "C-805", in: "09:00", out: "10:30", vehicle: "—", status: "out" },
-  { name: "Swiggy", purpose: "Food delivery", host: "B-602", in: "12:55", out: "12:59", vehicle: "—", status: "out" },
-  { name: "Mr. & Mrs. Verma", purpose: "Family visit", host: "D-110", in: "13:20", out: "—", vehicle: "MH-04-LK-5512", status: "in" },
-];
+import { toast } from "sonner";
 
 const Visitors = () => {
   const [isAddOpen, setIsAddOpen] = useState(false);
-  const [visitors, setVisitors] = useState(initialVisitors);
+  const [visitors, setVisitors] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const handleAdd = (newV: any) => {
-    const entry = {
-      name: newV.name,
-      purpose: newV.purpose,
-      host: newV.host.split(" (")[0],
-      vehicle: newV.vehicle || "—",
-      in: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }),
-      out: "—",
-      status: "in"
-    };
-    setVisitors([entry, ...visitors]);
+  useEffect(() => {
+    fetchVisitors();
+  }, []);
+
+  const fetchVisitors = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/api/visitors");
+      const data = await response.json();
+      setVisitors(data);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching visitors:", error);
+      setLoading(false);
+    }
+  };
+
+  const handleAdd = async (newV: any) => {
+    try {
+        await fetch("http://localhost:5000/api/visitors", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                name: newV.name,
+                purpose: newV.purpose,
+                host_unit: newV.host.split(" (")[0],
+                vehicle_number: newV.vehicle || "—",
+                entry_time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }),
+                status: "in"
+            })
+        });
+        fetchVisitors();
+        toast.success("Visitor entry logged!");
+    } catch (error) {
+        toast.error("Failed to log visitor");
+    }
   };
 
   return (
@@ -64,14 +82,14 @@ const Visitors = () => {
               </tr>
             </thead>
             <tbody>
-              {visitors.map((v, i) => (
+              {visitors.map((v: any, i: number) => (
                 <tr key={i} className="border-t border-border/60 hover:bg-secondary/40 transition-colors">
-                  <td className="px-5 py-4 font-semibold">{v.name}</td>
+                   <td className="px-5 py-4 font-semibold">{v.name}</td>
                   <td className="px-5 py-4 text-muted-foreground">{v.purpose}</td>
-                  <td className="px-5 py-4 font-semibold">{v.host}</td>
-                  <td className="px-5 py-4 text-muted-foreground tabular-nums">{v.vehicle}</td>
-                  <td className="px-5 py-4 tabular-nums">{v.in}</td>
-                  <td className="px-5 py-4 tabular-nums text-muted-foreground">{v.out}</td>
+                  <td className="px-5 py-4 font-semibold">{v.host_unit}</td>
+                  <td className="px-5 py-4 text-muted-foreground tabular-nums">{v.vehicle_number}</td>
+                  <td className="px-5 py-4 tabular-nums">{v.entry_time}</td>
+                  <td className="px-5 py-4 tabular-nums text-muted-foreground">{v.exit_time}</td>
                   <td className="px-5 py-4">
                     {v.status === "in" ? (
                       <StatusBadge tone="info"><LogIn className="h-3 w-3" /> Inside</StatusBadge>

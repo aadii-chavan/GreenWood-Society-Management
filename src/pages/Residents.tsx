@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { CrudPage } from "@/components/layout/CrudPage";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { Button } from "@/components/ui/button";
@@ -16,20 +16,29 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 
-const initialResidents = [
-  { name: "Priya Sharma", flat: "B-1204", phone: "+91 98201 23456", email: "priya.s@mail.com", type: "Owner", status: "active" },
-  { name: "Rohan Mehta", flat: "A-301", phone: "+91 99800 11223", email: "rohan.m@mail.com", type: "Tenant", status: "active" },
-  { name: "Ananya Iyer", flat: "C-805", phone: "+91 90040 88121", email: "ananya@mail.com", type: "Owner", status: "active" },
-  { name: "Vikram Patel", flat: "D-110", phone: "+91 90909 12345", email: "vikram.p@mail.com", type: "Owner", status: "inactive" },
-  { name: "Sneha Nair", flat: "B-602", phone: "+91 98765 43210", email: "sneha.n@mail.com", type: "Tenant", status: "active" },
-  { name: "Arjun Kapoor", flat: "A-1002", phone: "+91 97000 11111", email: "arjun.k@mail.com", type: "Owner", status: "active" },
-  { name: "Meera Joshi", flat: "C-204", phone: "+91 99999 22222", email: "meera.j@mail.com", type: "Tenant", status: "active" },
-];
-
 const Residents = () => {
-  const [residents, setResidents] = useState(initialResidents);
+  const [residents, setResidents] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+
+  // Fetch Residents from Backend
+  useEffect(() => {
+    fetchResidents();
+  }, []);
+
+  const fetchResidents = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/api/residents");
+      const data = await response.json();
+      setResidents(data);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching residents:", error);
+      toast.error("Failed to load residents from server");
+      setLoading(false);
+    }
+  };
   const [newResident, setNewResident] = useState({
     name: "",
     flat: "",
@@ -39,21 +48,41 @@ const Residents = () => {
     status: "active"
   });
 
-  const filteredResidents = residents.filter(r => 
-    r.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    r.flat.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    r.email.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredResidents = (residents || []).filter(r => 
+    (r.full_name || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (r.unit_number || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (r.email || "").toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleAddResident = () => {
+  const handleAddResident = async () => {
     if (!newResident.name || !newResident.flat) {
       toast.error("Please fill in all required fields");
       return;
     }
-    setResidents([newResident, ...residents]);
-    setIsAddDialogOpen(false);
-    setNewResident({ name: "", flat: "", phone: "", email: "", type: "Owner", status: "active" });
-    toast.success(`${newResident.name} added successfully!`);
+
+    try {
+        const response = await fetch("http://localhost:5000/api/residents", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                full_name: newResident.name,
+                unit_number: newResident.flat,
+                phone: newResident.phone,
+                email: newResident.email,
+                resident_type: newResident.type,
+                status: newResident.status
+            })
+        });
+
+        if (response.ok) {
+            fetchResidents();
+            setIsAddDialogOpen(false);
+            setNewResident({ name: "", flat: "", phone: "", email: "", type: "Owner", status: "active" });
+            toast.success(`${newResident.name} added successfully!`);
+        }
+    } catch (error) {
+        toast.error("Failed to add resident");
+    }
   };
 
   return (
@@ -100,17 +129,17 @@ const Residents = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredResidents.map((r) => (
+              {filteredResidents.map((r: any) => (
                 <tr key={r.flat + r.name} className="border-t border-border/60 hover:bg-secondary/40 transition-colors">
                   <td className="px-5 py-4">
                     <div className="flex items-center gap-3">
                       <div className="h-9 w-9 rounded-full bg-primary-soft text-primary flex items-center justify-center text-xs font-semibold">
-                        {r.name.split(" ").map((n) => n[0]).join("")}
+                        {(r.full_name || "??").split(" ").map((n) => n[0]).join("")}
                       </div>
-                      <p className="font-semibold">{r.name}</p>
+                      <p className="font-semibold">{r.full_name}</p>
                     </div>
                   </td>
-                  <td className="px-5 py-4 font-semibold tabular-nums">{r.flat}</td>
+                  <td className="px-5 py-4 font-semibold tabular-nums">{r.unit_number}</td>
                   <td className="px-5 py-4 text-muted-foreground">
                     <div className="flex items-center gap-3">
                       <span className="inline-flex items-center gap-1.5"><Phone className="h-3 w-3" />{r.phone}</span>
@@ -118,7 +147,7 @@ const Residents = () => {
                     <div className="text-xs inline-flex items-center gap-1.5 mt-0.5"><Mail className="h-3 w-3" />{r.email}</div>
                   </td>
                   <td className="px-5 py-4">
-                    <span className="px-2.5 py-1 rounded-full bg-secondary text-xs font-semibold">{r.type}</span>
+                    <span className="px-2.5 py-1 rounded-full bg-secondary text-xs font-semibold">{r.resident_type}</span>
                   </td>
                   <td className="px-5 py-4">
                     <StatusBadge tone={r.status === "active" ? "success" : "muted"}>

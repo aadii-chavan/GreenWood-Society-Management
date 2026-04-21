@@ -1,50 +1,53 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { CrudPage } from "@/components/layout/CrudPage";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { Pin, Calendar } from "lucide-react";
 import { AddNoticeDialog } from "@/components/dashboard/AddNoticeDialog";
-
-const initialNotices = [
-  {
-    title: "Annual General Meeting — 2026",
-    body: "Dear residents, the AGM will be held on Saturday at the clubhouse. Agenda includes budget approval, committee elections and society audit. Attendance is mandatory.",
-    date: "26 Apr 2026",
-    tag: "Important",
-    pinned: true,
-    by: "Society Committee",
-  },
-  {
-    title: "Water tank cleaning scheduled",
-    body: "Please store water in advance. Supply will be interrupted on Wednesday from 09:00 AM to 02:00 PM across all towers.",
-    date: "23 Apr 2026",
-    tag: "Maintenance",
-    by: "Facilities Team",
-  },
-  {
-    title: "Holi celebrations at central lawn",
-    body: "Join us for an eco-friendly Holi celebration with snacks, music and games for kids. Please RSVP at the security desk.",
-    date: "20 Apr 2026",
-    tag: "Event",
-    by: "Cultural Committee",
-  },
-  {
-    title: "New visitor management policy",
-    body: "All visitors must now be pre-approved via the resident app. Manual entry will require host confirmation over call.",
-    date: "18 Apr 2026",
-    tag: "Policy",
-    by: "Security",
-  },
-];
+import { toast } from "sonner";
 
 const tagTone = (t: string) =>
   t === "Important" ? "destructive" : t === "Maintenance" ? "warning" : t === "Event" ? "success" : "info";
 
 const Notices = () => {
-  const [notices, setNotices] = useState(initialNotices);
+  const [notices, setNotices] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
 
-  const handleAddNotice = (newNotice: any) => {
-    setNotices([newNotice, ...notices]);
+  useEffect(() => {
+    fetchNotices();
+  }, []);
+
+  const fetchNotices = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/api/notices");
+      const data = await response.json();
+      setNotices(data);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching notices:", error);
+      setLoading(false);
+    }
+  };
+
+  const handleAddNotice = async (newNotice: any) => {
+    try {
+        await fetch("http://localhost:5000/api/notices", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                title: newNotice.title,
+                body: newNotice.body,
+                posted_date: newNotice.date,
+                tag: newNotice.tag,
+                posted_by: newNotice.by,
+                pinned: newNotice.pinned ? 1 : 0
+            })
+        });
+        fetchNotices();
+        toast.success("Notice posted!");
+    } catch (error) {
+        toast.error("Failed to post notice");
+    }
   };
 
   return (
@@ -56,7 +59,7 @@ const Notices = () => {
         onAdd={() => setIsAddDialogOpen(true)}
       >
         <div className="space-y-5">
-          {notices.map((n, i) => (
+          {notices.map((n: any, i: number) => (
             <article
               key={i}
               className="surface-card surface-card-hover p-6 flex flex-col md:flex-row gap-5 animate-in fade-in slide-in-from-bottom-4 duration-500"
@@ -67,8 +70,8 @@ const Notices = () => {
                   {n.pinned ? <Pin className="h-5 w-5" /> : <Calendar className="h-5 w-5" />}
                 </div>
                 <div>
-                  <p className="text-sm font-semibold">{n.date}</p>
-                  <p className="text-xs text-muted-foreground">{n.by}</p>
+                  <p className="text-sm font-semibold">{n.posted_date}</p>
+                  <p className="text-xs text-muted-foreground">{n.posted_by}</p>
                 </div>
               </div>
               <div className="flex-1">
