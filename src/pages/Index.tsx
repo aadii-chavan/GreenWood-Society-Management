@@ -40,24 +40,21 @@ const Index = () => {
 
       {/* Dashboard Content */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-        <div className="lg:col-span-2">
+        {/* Main Column */}
+        <div className="lg:col-span-2 space-y-5">
           <RevenueChart />
-        </div>
-        <QuickActions 
-          onAddResident={() => setIsAddResidentOpen(true)}
-          onGenerateBill={() => handleAction("Generate Bill")}
-          onPostNotice={() => handleAction("Post Notice")}
-          onLogMaintenance={() => handleAction("Log Maintenance")}
-        />
-      </div>
-
-      {/* Bottom row */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mt-5">
-        <div className="lg:col-span-1">
-          <DashboardCalendar />
-        </div>
-        <div className="lg:col-span-2">
           <RecentActivity />
+        </div>
+
+        {/* Sidebar Column */}
+        <div className="space-y-5">
+          <QuickActions 
+            onAddResident={() => setIsAddResidentOpen(true)}
+            onGenerateBill={() => handleAction("Generate Bill")}
+            onPostNotice={() => handleAction("Post Notice")}
+            onLogMaintenance={() => handleAction("Log Maintenance")}
+          />
+          <DashboardCalendar />
         </div>
       </div>
 
