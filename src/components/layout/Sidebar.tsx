@@ -5,7 +5,6 @@ import {
   Receipt,
   MessageSquareWarning,
   UserPlus,
-  Dumbbell,
   Megaphone,
   Settings,
   Building2,
@@ -19,7 +18,6 @@ const mainNav = [
   { to: "/bills", label: "Bills", icon: Receipt },
   { to: "/complaints", label: "Complaints", icon: MessageSquareWarning, badge: "12" },
   { to: "/visitors", label: "Visitors", icon: UserPlus },
-  { to: "/amenities", label: "Amenities", icon: Dumbbell },
   { to: "/notices", label: "Notices", icon: Megaphone },
 ];
 

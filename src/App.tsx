@@ -9,7 +9,6 @@ import Residents from "./pages/Residents.tsx";
 import Bills from "./pages/Bills.tsx";
 import Complaints from "./pages/Complaints.tsx";
 import Visitors from "./pages/Visitors.tsx";
-import Amenities from "./pages/Amenities.tsx";
 import Notices from "./pages/Notices.tsx";
 import Settings from "./pages/Settings.tsx";
 
@@ -28,7 +27,6 @@ const App = () => (
           <Route path="/bills" element={<Bills />} />
           <Route path="/complaints" element={<Complaints />} />
           <Route path="/visitors" element={<Visitors />} />
-          <Route path="/amenities" element={<Amenities />} />
           <Route path="/notices" element={<Notices />} />
           <Route path="/settings" element={<Settings />} />
 
