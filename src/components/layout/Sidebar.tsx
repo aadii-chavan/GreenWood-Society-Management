@@ -7,7 +7,6 @@ import {
   UserPlus,
   Dumbbell,
   Megaphone,
-  LogOut,
   Settings,
   HelpCircle,
   Building2,
@@ -34,13 +33,6 @@ const generalNav = [
 export const Sidebar = () => {
   const { pathname } = useLocation();
   const navigate = useNavigate();
-
-  const handleLogout = () => {
-    localStorage.removeItem("isAuthenticated");
-    localStorage.removeItem("user");
-    toast.info("Logged out successfully");
-    navigate("/login");
-  };
 
   return (
     <aside className="hidden lg:flex w-[256px] shrink-0 flex-col gap-6 p-5 pr-0">
@@ -111,13 +103,6 @@ export const Sidebar = () => {
               <span>{item.label}</span>
             </NavLink>
           ))}
-          <button
-            onClick={handleLogout}
-            className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13.5px] font-medium text-sidebar-foreground hover:bg-accent transition-all"
-          >
-            <LogOut className="h-[17px] w-[17px]" strokeWidth={2} />
-            <span>Logout</span>
-          </button>
         </nav>
 
 
