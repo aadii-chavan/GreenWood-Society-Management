@@ -31,13 +31,13 @@ export const StatCard = ({
         size === "sm" ? "p-3.5 md:p-4" : "p-5 md:p-6",
         highlight
           ? "gradient-primary text-primary-foreground border-transparent shadow-glow"
-          : "bg-card border-border/70 shadow-soft hover:shadow-card hover:border-border"
+          : "bg-card border-border/70 dark:border-border/80 shadow-soft hover:shadow-card hover:border-border"
       )}
     >
       {highlight && (
         <>
-          <div className="absolute inset-0 gradient-mesh opacity-70 pointer-events-none" />
-          <div className="absolute -right-12 -top-12 h-40 w-40 rounded-full bg-primary-foreground/10 blur-2xl" />
+          <div className="absolute inset-0 gradient-mesh opacity-70 dark:opacity-40 pointer-events-none" />
+          <div className="absolute -right-12 -top-12 h-40 w-40 rounded-full bg-primary-foreground/10 blur-2xl dark:bg-primary-foreground/5 dark:blur-3xl" />
         </>
       )}
 

@@ -79,34 +79,41 @@
   }
 
   .dark {
-    --background: 160 22% 7%;
+    --background: 160 22% 5%;
     --foreground: 150 18% 95%;
-    --card: 160 22% 10%;
+    --card: 160 22% 9%;
     --card-foreground: 150 18% 95%;
-    --popover: 160 22% 10%;
+    --popover: 160 22% 9%;
     --popover-foreground: 150 18% 95%;
     --primary: 150 55% 48%;
     --primary-foreground: 160 30% 8%;
     --primary-glow: 150 65% 58%;
-    --primary-soft: 152 28% 16%;
-    --secondary: 160 18% 14%;
+    --primary-soft: 152 28% 14%;
+    --secondary: 160 18% 12%;
     --secondary-foreground: 150 18% 95%;
-    --muted: 160 18% 14%;
+    --muted: 160 18% 13%;
     --muted-foreground: 150 8% 65%;
-    --accent: 152 28% 18%;
+    --accent: 152 28% 15%;
     --accent-foreground: 150 55% 80%;
     --destructive: 358 65% 50%;
     --destructive-foreground: 0 0% 100%;
-    --border: 160 18% 17%;
-    --input: 160 18% 17%;
+    --border: 160 12% 18%;
+    --input: 160 12% 18%;
     --ring: 150 55% 48%;
-    --sidebar-background: 160 22% 9%;
+
+    /* Shadows in dark mode — subtle light tint instead of pure black to avoid "ink" look */
+    --shadow-xs: 0 1px 2px hsl(160 30% 2% / 0.4);
+    --shadow-soft: 0 4px 12px -2px hsl(160 30% 1% / 0.6);
+    --shadow-card: 0 12px 24px -8px hsl(160 30% 1% / 0.7);
+    --shadow-glow: 0 12px 32px -12px hsl(150 55% 48% / 0.3);
+
+    --sidebar-background: 160 22% 7%;
     --sidebar-foreground: 150 14% 78%;
     --sidebar-primary: 150 55% 48%;
     --sidebar-primary-foreground: 160 30% 8%;
-    --sidebar-accent: 160 18% 14%;
+    --sidebar-accent: 160 18% 11%;
     --sidebar-accent-foreground: 150 55% 80%;
-    --sidebar-border: 160 18% 16%;
+    --sidebar-border: 160 18% 13%;
     --sidebar-ring: 150 55% 48%;
   }
 }
@@ -152,7 +159,7 @@
 
 @layer components {
   .surface-card {
-    @apply rounded-[22px] bg-card border border-border/70;
+    @apply rounded-[22px] bg-card border border-border/70 dark:border-border;
     box-shadow: var(--shadow-soft);
   }
 
