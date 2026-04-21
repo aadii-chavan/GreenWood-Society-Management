@@ -1,9 +1,11 @@
+import { useState } from "react";
 import { CrudPage } from "@/components/layout/CrudPage";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { Button } from "@/components/ui/button";
-import { Dumbbell, Waves, Trees, Users2, Music, BookOpen } from "lucide-react";
+import { Dumbbell, Waves, Trees, Users2, Music, BookOpen, Sparkles } from "lucide-react";
+import { AddAmenityDialog } from "@/components/dashboard/AddAmenityDialog";
 
-const amenities = [
+const initialAmenities = [
   { name: "Swimming Pool", icon: Waves, slots: "06:00 – 21:00", booked: 18, capacity: 25, status: "available" },
   { name: "Gym", icon: Dumbbell, slots: "05:00 – 23:00", booked: 12, capacity: 20, status: "available" },
   { name: "Clubhouse", icon: Music, slots: "10:00 – 22:00", booked: 4, capacity: 4, status: "full" },
@@ -12,12 +14,41 @@ const amenities = [
   { name: "Party Hall", icon: Users2, slots: "12:00 – 23:00", booked: 1, capacity: 2, status: "maintenance" },
 ];
 
+const iconMap: Record<string, any> = {
+  Waves, Dumbbell, Music, Trees, BookOpen, Users2, Sparkles
+};
+
 const tone = (s: string) => s === "available" ? "success" : s === "full" ? "warning" : "destructive";
 const label = (s: string) => s === "maintenance" ? "Maintenance" : s[0].toUpperCase() + s.slice(1);
 
 const Amenities = () => {
+  const [isAddOpen, setIsAddOpen] = useState(false);
+  const [amenities, setAmenities] = useState(initialAmenities);
+
+  const handleAdd = (newA: any) => {
+    const amenity = {
+      name: newA.name,
+      icon: iconMap[newA.icon] || Sparkles,
+      slots: newA.slots,
+      booked: 0,
+      capacity: Number(newA.capacity),
+      status: "available"
+    };
+    setAmenities([...amenities, amenity]);
+  };
+
   return (
-    <CrudPage title="Amenities" subtitle="Manage shared facilities and bookings." addLabel="Add amenity">
+    <CrudPage 
+      title="Amenities" 
+      subtitle="Manage shared facilities and bookings." 
+      addLabel="Add amenity"
+      onAdd={() => setIsAddOpen(true)}
+    >
+      <AddAmenityDialog 
+        open={isAddOpen} 
+        onOpenChange={setIsAddOpen} 
+        onAdd={handleAdd}
+      />
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         {amenities.map((a) => {
           const pct = Math.min(100, Math.round((a.booked / Math.max(a.capacity, 1)) * 100));
