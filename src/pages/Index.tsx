@@ -10,6 +10,7 @@ import { AddResidentDialog } from "@/components/dashboard/AddResidentDialog";
 import { GenerateBillDialog } from "@/components/dashboard/GenerateBillDialog";
 import { NewComplaintDialog } from "@/components/dashboard/NewComplaintDialog";
 import { AddVisitorDialog } from "@/components/dashboard/AddVisitorDialog";
+import { AddNoticeDialog } from "@/components/dashboard/AddNoticeDialog";
 import { toast } from "sonner";
 
 const Index = () => {
@@ -17,6 +18,7 @@ const Index = () => {
   const [isGenerateBillOpen, setIsGenerateBillOpen] = useState(false);
   const [isNewComplaintOpen, setIsNewComplaintOpen] = useState(false);
   const [isVisitorEntryOpen, setIsVisitorEntryOpen] = useState(false);
+  const [isPostNoticeOpen, setIsPostNoticeOpen] = useState(false);
 
   const handleAction = (name: string) => {
     toast.info(`${name} action enabled! Form coming soon.`);
@@ -54,7 +56,7 @@ const Index = () => {
             <QuickActions 
               onAddResident={() => setIsAddResidentOpen(true)}
               onGenerateBill={() => setIsGenerateBillOpen(true)}
-              onPostNotice={() => handleAction("Post Notice")}
+              onPostNotice={() => setIsPostNoticeOpen(true)}
               onVisitorEntry={() => setIsVisitorEntryOpen(true)}
             />
           </div>
@@ -84,6 +86,11 @@ const Index = () => {
       <AddVisitorDialog 
         open={isVisitorEntryOpen} 
         onOpenChange={setIsVisitorEntryOpen} 
+      />
+
+      <AddNoticeDialog 
+        open={isPostNoticeOpen} 
+        onOpenChange={setIsPostNoticeOpen} 
       />
     </AppShell>
   );

@@ -1,8 +1,10 @@
+import { useState } from "react";
 import { CrudPage } from "@/components/layout/CrudPage";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { Pin, Calendar } from "lucide-react";
+import { AddNoticeDialog } from "@/components/dashboard/AddNoticeDialog";
 
-const notices = [
+const initialNotices = [
   {
     title: "Annual General Meeting — 2026",
     body: "Dear residents, the AGM will be held on Saturday at the clubhouse. Agenda includes budget approval, committee elections and society audit. Attendance is mandatory.",
@@ -38,36 +40,58 @@ const tagTone = (t: string) =>
   t === "Important" ? "destructive" : t === "Maintenance" ? "warning" : t === "Event" ? "success" : "info";
 
 const Notices = () => {
+  const [notices, setNotices] = useState(initialNotices);
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+
+  const handleAddNotice = (newNotice: any) => {
+    setNotices([newNotice, ...notices]);
+  };
+
   return (
-    <CrudPage title="Notices" subtitle="Broadcast announcements to all residents." addLabel="Post notice">
-      <div className="space-y-5">
-        {notices.map((n, i) => (
-          <article
-            key={i}
-            className="surface-card surface-card-hover p-6 flex flex-col md:flex-row gap-5"
-          >
-            <div className="flex md:flex-col items-center md:items-start gap-3 md:gap-2 md:w-44 shrink-0">
-              <div className="h-12 w-12 rounded-2xl bg-primary-soft text-primary flex items-center justify-center">
-                {n.pinned ? <Pin className="h-5 w-5" /> : <Calendar className="h-5 w-5" />}
+    <>
+      <CrudPage 
+        title="Notices" 
+        subtitle="Broadcast announcements to all residents." 
+        addLabel="Post notice"
+        onAdd={() => setIsAddDialogOpen(true)}
+      >
+        <div className="space-y-5">
+          {notices.map((n, i) => (
+            <article
+              key={i}
+              className="surface-card surface-card-hover p-6 flex flex-col md:flex-row gap-5 animate-in fade-in slide-in-from-bottom-4 duration-500"
+              style={{ animationDelay: `${i * 100}ms` }}
+            >
+              <div className="flex md:flex-col items-center md:items-start gap-3 md:gap-2 md:w-44 shrink-0">
+                <div className="h-12 w-12 rounded-2xl bg-primary-soft text-primary flex items-center justify-center">
+                  {n.pinned ? <Pin className="h-5 w-5" /> : <Calendar className="h-5 w-5" />}
+                </div>
+                <div>
+                  <p className="text-sm font-semibold">{n.date}</p>
+                  <p className="text-xs text-muted-foreground">{n.by}</p>
+                </div>
               </div>
-              <div>
-                <p className="text-sm font-semibold">{n.date}</p>
-                <p className="text-xs text-muted-foreground">{n.by}</p>
+              <div className="flex-1">
+                <div className="flex items-center gap-3 flex-wrap">
+                  <h4 className="text-lg font-bold">{n.title}</h4>
+                  <StatusBadge tone={tagTone(n.tag)}>{n.tag}</StatusBadge>
+                  {n.pinned && <StatusBadge tone="muted">Pinned</StatusBadge>}
+                </div>
+                <p className="text-sm text-muted-foreground mt-2 leading-relaxed">{n.body}</p>
               </div>
-            </div>
-            <div className="flex-1">
-              <div className="flex items-center gap-3 flex-wrap">
-                <h4 className="text-lg font-bold">{n.title}</h4>
-                <StatusBadge tone={tagTone(n.tag)}>{n.tag}</StatusBadge>
-                {n.pinned && <StatusBadge tone="muted">Pinned</StatusBadge>}
-              </div>
-              <p className="text-sm text-muted-foreground mt-2 leading-relaxed">{n.body}</p>
-            </div>
-          </article>
-        ))}
-      </div>
-    </CrudPage>
+            </article>
+          ))}
+        </div>
+      </CrudPage>
+
+      <AddNoticeDialog 
+        open={isAddDialogOpen} 
+        onOpenChange={setIsAddDialogOpen}
+        onAdd={handleAddNotice}
+      />
+    </>
   );
 };
 
 export default Notices;
+
