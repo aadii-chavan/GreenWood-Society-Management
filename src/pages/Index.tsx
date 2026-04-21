@@ -49,7 +49,7 @@ const Index = () => {
           <div className="lg:col-span-1">
             <QuickActions 
               onAddResident={() => setIsAddResidentOpen(true)}
-              onGenerateBill={() => handleAction("Generate Bill")}
+              onGenerateBill={() => setIsGenerateBillOpen(true)}
               onPostNotice={() => handleAction("Post Notice")}
               onLogMaintenance={() => handleAction("Log Maintenance")}
               onAddEvent={() => handleAction("Add Event")}
@@ -67,6 +67,11 @@ const Index = () => {
       <AddResidentDialog 
         open={isAddResidentOpen} 
         onOpenChange={setIsAddResidentOpen} 
+      />
+
+      <GenerateBillDialog 
+        open={isGenerateBillOpen} 
+        onOpenChange={setIsGenerateBillOpen} 
       />
     </AppShell>
   );
