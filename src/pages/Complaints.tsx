@@ -1,9 +1,11 @@
+import { useState } from "react";
 import { CrudPage } from "@/components/layout/CrudPage";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { MessageSquareWarning, Clock, CheckCircle2 } from "lucide-react";
 import { StatCard } from "@/components/ui/StatCard";
+import { NewComplaintDialog } from "@/components/dashboard/NewComplaintDialog";
 
-const complaints = [
+const initialComplaints = [
   { id: "#C-0421", title: "Water leakage in ceiling", flat: "A-301", by: "Rohan Mehta", category: "Plumbing", priority: "high", status: "open", time: "2h ago" },
   { id: "#C-0420", title: "Lift making noise", flat: "B-1204", by: "Priya Sharma", category: "Electrical", priority: "medium", status: "progress", time: "5h ago" },
   { id: "#C-0419", title: "Garbage not collected", flat: "C-805", by: "Ananya Iyer", category: "Housekeeping", priority: "low", status: "resolved", time: "1d ago" },
@@ -16,13 +18,41 @@ const sTone = (s: string) => s === "resolved" ? "success" : s === "progress" ? "
 const sLabel = (s: string) => s === "progress" ? "In Progress" : s[0].toUpperCase() + s.slice(1);
 
 const Complaints = () => {
+  const [isNewOpen, setIsNewOpen] = useState(false);
+  const [complaints, setComplaints] = useState(initialComplaints);
+
+  const handleSubmit = (newC: any) => {
+    const complaint = {
+      id: `#C-0${422 + complaints.length}`,
+      title: newC.title,
+      category: newC.category,
+      priority: newC.priority,
+      status: "open",
+      time: "Just now",
+      by: newC.resident.split(" (")[0],
+      flat: newC.resident.split("(")[1].replace(")", "")
+    };
+    setComplaints([complaint, ...complaints]);
+  };
+
   return (
-    <CrudPage title="Complaints" subtitle="Track and resolve resident grievances quickly." addLabel="New complaint">
+    <CrudPage 
+      title="Complaints" 
+      subtitle="Track and resolve resident grievances quickly." 
+      addLabel="New complaint"
+      onAdd={() => setIsNewOpen(true)}
+    >
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-6">
         <StatCard size="sm" highlight label="Open" value="12" icon={MessageSquareWarning} helper="3 urgent" />
         <StatCard size="sm" label="In Progress" value="7" icon={Clock} helper="avg 2.4 days" />
         <StatCard size="sm" label="Resolved" value="64" icon={CheckCircle2} delta="+12" helper="this month" />
       </div>
+
+      <NewComplaintDialog 
+        open={isNewOpen} 
+        onOpenChange={setIsNewOpen} 
+        onSubmit={handleSubmit}
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         {complaints.map((c) => (
