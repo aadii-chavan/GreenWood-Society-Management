@@ -1,10 +1,12 @@
+import { useState } from "react";
 import { CrudPage } from "@/components/layout/CrudPage";
 import { StatCard } from "@/components/ui/StatCard";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { IndianRupee, Receipt, AlertCircle, MoreHorizontal } from "lucide-react";
+import { GenerateBillDialog } from "@/components/dashboard/GenerateBillDialog";
 
-const bills = [
+const billsData = [
   { id: "INV-2025-0421", flat: "B-1204", resident: "Priya Sharma", amount: "₹4,500", due: "30 Apr 2026", status: "paid" },
   { id: "INV-2025-0420", flat: "A-301", resident: "Rohan Mehta", amount: "₹4,500", due: "30 Apr 2026", status: "pending" },
   { id: "INV-2025-0419", flat: "C-805", resident: "Ananya Iyer", amount: "₹5,200", due: "28 Apr 2026", status: "paid" },
@@ -16,13 +18,39 @@ const bills = [
 const tone = (s: string) => s === "paid" ? "success" : s === "overdue" ? "destructive" : "warning";
 
 const Bills = () => {
+  const [isGenerateOpen, setIsGenerateOpen] = useState(false);
+  const [bills, setBills] = useState(billsData);
+
+  const handleGenerate = (newBill: any) => {
+    const bill = {
+      id: `INV-2025-0${422 + bills.length}`,
+      resident: newBill.resident.split(" (")[0],
+      flat: newBill.resident.split("(")[1].replace(")", ""),
+      amount: `₹${Number(newBill.amount).toLocaleString()}`,
+      due: "30 May 2026",
+      status: "pending"
+    };
+    setBills([bill, ...bills]);
+  };
+
   return (
-    <CrudPage title="Bills" subtitle="Generate invoices and track maintenance dues." addLabel="Generate bill">
+    <CrudPage 
+      title="Bills" 
+      subtitle="Generate invoices and track maintenance dues." 
+      addLabel="Generate bill"
+      onAdd={() => setIsGenerateOpen(true)}
+    >
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-6">
         <StatCard size="sm" highlight label="Collected this month" value="₹6.4L" icon={IndianRupee} delta="+8.4%" helper="vs last month" />
         <StatCard size="sm" label="Pending" value="32" icon={Receipt} helper="₹1.4L outstanding" />
         <StatCard size="sm" label="Overdue" value="8" icon={AlertCircle} helper="needs follow-up" />
       </div>
+
+      <GenerateBillDialog 
+        open={isGenerateOpen} 
+        onOpenChange={setIsGenerateOpen} 
+        onGenerate={handleGenerate}
+      />
 
       <div className="surface-card overflow-hidden">
         <div className="overflow-x-auto">

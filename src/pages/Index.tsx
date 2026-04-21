@@ -7,10 +7,12 @@ import { RevenueChart } from "@/components/dashboard/RevenueChart";
 import { QuickActions } from "@/components/dashboard/QuickActions";
 import { RecentActivity } from "@/components/dashboard/RecentActivity";
 import { AddResidentDialog } from "@/components/dashboard/AddResidentDialog";
+import { GenerateBillDialog } from "@/components/dashboard/GenerateBillDialog";
 import { toast } from "sonner";
 
 const Index = () => {
   const [isAddResidentOpen, setIsAddResidentOpen] = useState(false);
+  const [isGenerateBillOpen, setIsGenerateBillOpen] = useState(false);
 
   const handleAction = (name: string) => {
     toast.info(`${name} action enabled! Form coming soon.`);
