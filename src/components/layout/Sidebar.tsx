@@ -10,7 +10,6 @@ import {
   Settings,
   HelpCircle,
   Building2,
-  Sparkles,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -105,24 +104,7 @@ export const Sidebar = () => {
           ))}
         </nav>
 
-
-        {/* Promo */}
-        <div className="mt-auto pt-5">
-          <div className="relative overflow-hidden rounded-2xl gradient-dark p-4 text-primary-foreground">
-            <div className="absolute -right-8 -top-8 h-28 w-28 rounded-full bg-primary-glow/25 blur-2xl" />
-            <div className="relative">
-              <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-primary-foreground/15 text-[10px] font-semibold tracking-wide">
-                <Sparkles className="h-3 w-3" /> PRO
-              </div>
-              <p className="text-[13px] font-semibold mt-2.5 leading-snug">
-                Unlock advanced<br />reporting & insights
-              </p>
-              <button className="mt-3 w-full rounded-lg bg-primary-foreground text-primary text-[12px] font-semibold py-2 hover:bg-primary-foreground/90 transition-colors">
-                Upgrade now
-              </button>
-            </div>
-          </div>
-        </div>
+        </nav>
       </div>
     </aside>
   );
