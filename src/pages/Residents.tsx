@@ -85,12 +85,26 @@ const Residents = () => {
     }
   };
 
+  const handleExport = () => {
+    const headers = ["Name", "Flat", "Phone", "Email", "Type", "Status"];
+    const csvData = residents.map(r => [r.full_name, r.unit_number, r.phone, r.email, r.resident_type, r.status].join(","));
+    const csvContent = [headers.join(","), ...csvData].join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv" });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `residents_${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    toast.success("Residents list exported!");
+  };
+
   return (
     <CrudPage 
       title="Residents" 
       subtitle={`Manage all ${residents.length} residents across 4 towers.`} 
       addLabel="Add resident"
       onAdd={() => setIsAddDialogOpen(true)}
+      onExport={handleExport}
     >
       <div className="surface-card p-0 overflow-hidden">
         <div className="p-5 flex flex-col md:flex-row md:items-center gap-3 border-b border-border/60">

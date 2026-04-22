@@ -52,17 +52,31 @@ const Complaints = () => {
     }
   };
 
+  const handleExport = () => {
+    const headers = ["ID", "Title", "Category", "Priority", "Status"];
+    const csvData = complaints.map(c => [c.id, c.title, c.category, c.priority, c.status].join(","));
+    const csvContent = [headers.join(","), ...csvData].join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv" });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `complaints_${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    toast.success("Complaints log exported!");
+  };
+
   return (
     <CrudPage 
       title="Complaints" 
       subtitle="Track and resolve resident grievances quickly." 
       addLabel="New complaint"
       onAdd={() => setIsNewOpen(true)}
+      onExport={handleExport}
     >
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-6">
-        <StatCard size="sm" highlight label="Open" value="12" icon={MessageSquareWarning} helper="3 urgent" />
-        <StatCard size="sm" label="In Progress" value="7" icon={Clock} helper="avg 2.4 days" />
-        <StatCard size="sm" label="Resolved" value="64" icon={CheckCircle2} delta="+12" helper="this month" />
+        <StatCard size="sm" highlight label="Open" value={complaints.filter((c: any) => c.status === 'open').length.toString()} icon={MessageSquareWarning} helper="needs assignment" />
+        <StatCard size="sm" label="In Progress" value={complaints.filter((c: any) => c.status === 'progress').length.toString()} icon={Clock} helper="team working" />
+        <StatCard size="sm" label="Resolved" value={complaints.filter((c: any) => c.status === 'resolved').length.toString()} icon={CheckCircle2} helper="this month" />
       </div>
 
       <NewComplaintDialog 

@@ -17,26 +17,35 @@ import { toast } from "sonner";
 const Index = () => {
   const [stats, setStats] = useState({
     residents: 0,
-    bills: 0,
-    complaints: 0
+    pendingBills: 0,
+    activeComplaints: 0,
+    visitors: 0,
+    outstandingAmount: 0
   });
 
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const [resRes, resBills, resComp] = await Promise.all([
+        const [resRes, resBills, resComp, resVisitors] = await Promise.all([
           fetch("http://localhost:5000/api/residents"),
           fetch("http://localhost:5000/api/bills"),
-          fetch("http://localhost:5000/api/complaints")
+          fetch("http://localhost:5000/api/complaints"),
+          fetch("http://localhost:5000/api/visitors")
         ]);
         const residents = await resRes.json();
         const bills = await resBills.json();
         const complaints = await resComp.json();
+        const visitors = await resVisitors.json();
         
+        const pending = bills.filter((b: any) => b.status === 'pending');
+        const totalOutstanding = pending.reduce((sum: number, b: any) => sum + Number(b.amount), 0);
+
         setStats({
           residents: residents.length,
-          bills: bills.length,
-          complaints: complaints.length
+          pendingBills: pending.length,
+          activeComplaints: complaints.filter((c: any) => c.status !== 'resolved').length,
+          visitors: visitors.length,
+          outstandingAmount: totalOutstanding
         });
       } catch (error) {
         console.error("Error fetching dashboard stats:", error);
@@ -79,10 +88,10 @@ const Index = () => {
       <div className="flex flex-col gap-5">
         {/* Top Row: Chart & Actions */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-          <StatCard highlight label="Total Residents" value={stats.residents.toString()} icon={Users} delta="+4" helper="this month" />
-          <StatCard label="Pending Bills" value={stats.bills.toString()} icon={IndianRupee} delta="+2" helper="₹1.4L outstanding" />
-          <StatCard label="Active Complaints" value={stats.complaints.toString()} icon={MessageSquareWarning} delta="-5" helper="3 urgent" />
-          <StatCard label="Gate Entries" value="42" icon={ShieldCheck} delta="+8" helper="today" />
+          <StatCard highlight label="Total Residents" value={stats.residents.toString()} icon={Users} delta="+0" helper="this month" />
+          <StatCard label="Pending Bills" value={stats.pendingBills.toString()} icon={IndianRupee} delta="+0" helper={`₹${(stats.outstandingAmount/1000).toFixed(1)}K outstanding`} />
+          <StatCard label="Active Complaints" value={stats.activeComplaints.toString()} icon={MessageSquareWarning} delta="+0" helper="needs attention" />
+          <StatCard label="Gate Entries" value={stats.visitors.toString()} icon={ShieldCheck} delta="+0" helper="today" />
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
           <div className="lg:col-span-2">

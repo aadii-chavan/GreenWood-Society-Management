@@ -11,9 +11,10 @@ interface CrudPageProps {
   eyebrow?: string;
   children: ReactNode;
   onAdd?: () => void;
+  onExport?: () => void;
 }
 
-export const CrudPage = ({ title, subtitle, addLabel = "Add new", eyebrow, children, onAdd }: CrudPageProps) => {
+export const CrudPage = ({ title, subtitle, addLabel = "Add new", eyebrow, children, onAdd, onExport }: CrudPageProps) => {
   return (
     <AppShell title={title}>
       <PageHeader
@@ -22,7 +23,11 @@ export const CrudPage = ({ title, subtitle, addLabel = "Add new", eyebrow, child
         eyebrow={eyebrow ?? title}
         actions={
           <>
-            <Button variant="outline" className="rounded-lg h-10 px-4 text-[13px] font-semibold border-border bg-card hover:bg-accent">
+            <Button 
+              variant="outline" 
+              onClick={onExport}
+              className="rounded-lg h-10 px-4 text-[13px] font-semibold border-border bg-card hover:bg-accent"
+            >
               <Download className="h-4 w-4 mr-2" /> Export
             </Button>
             <Button 

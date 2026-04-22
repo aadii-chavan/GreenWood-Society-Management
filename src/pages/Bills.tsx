@@ -54,17 +54,31 @@ const Bills = () => {
     return "destructive";
   };
 
+  const handleExport = () => {
+    const headers = ["Invoice", "Resident", "Amount", "Due Date", "Status"];
+    const csvData = bills.map(b => [b.id, b.resident_name, b.amount, b.due_date, b.status].join(","));
+    const csvContent = [headers.join(","), ...csvData].join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv" });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `bills_${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    toast.success("Billing history exported!");
+  };
+
   return (
     <CrudPage 
       title="Bills" 
       subtitle="Generate invoices and track maintenance dues." 
       addLabel="Generate bill"
       onAdd={() => setIsGenerateOpen(true)}
+      onExport={handleExport}
     >
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-6">
-        <StatCard size="sm" highlight label="Collected this month" value="₹6.4L" icon={IndianRupee} delta="+8.4%" helper="vs last month" />
-        <StatCard size="sm" label="Pending" value="32" icon={Receipt} helper="₹1.4L outstanding" />
-        <StatCard size="sm" label="Overdue" value="8" icon={AlertCircle} helper="needs follow-up" />
+        <StatCard size="sm" highlight label="Collected" value={`₹${(bills.filter((b: any) => b.status === 'paid').reduce((s: number, b: any) => s + Number(b.amount), 0) / 1000).toFixed(1)}K`} icon={IndianRupee} helper="from paid bills" />
+        <StatCard size="sm" label="Pending" value={bills.filter((b: any) => b.status === 'pending').length.toString()} icon={Receipt} helper={`₹${(bills.filter((b: any) => b.status === 'pending').reduce((s: number, b: any) => s + Number(b.amount), 0) / 1000).toFixed(1)}K due`} />
+        <StatCard size="sm" label="Overdue" value={bills.filter((b: any) => b.status === 'overdue').length.toString()} icon={AlertCircle} helper="needs follow-up" />
       </div>
 
       <GenerateBillDialog 

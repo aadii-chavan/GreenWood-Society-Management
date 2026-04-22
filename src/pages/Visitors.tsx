@@ -48,12 +48,26 @@ const Visitors = () => {
     }
   };
 
+  const handleExport = () => {
+    const headers = ["Visitor", "Purpose", "Host Flat", "Vehicle", "In Time", "Out Time", "Status"];
+    const csvData = visitors.map(v => [v.name, v.purpose, v.host_unit, v.vehicle_number, v.entry_time, v.exit_time, v.status].join(","));
+    const csvContent = [headers.join(","), ...csvData].join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv" });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `visitors_${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    toast.success("Visitor log exported!");
+  };
+
   return (
     <CrudPage 
       title="Visitors" 
       subtitle="Real-time gate log and visitor approvals." 
       addLabel="Add visitor"
       onAdd={() => setIsAddOpen(true)}
+      onExport={handleExport}
     >
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-6">
         <StatCard size="sm" highlight label="Visitors today" value="42" icon={UserPlus} delta="+8" helper="vs yesterday" />
