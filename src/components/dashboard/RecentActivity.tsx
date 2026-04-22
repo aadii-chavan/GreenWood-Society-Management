@@ -1,29 +1,30 @@
+import { useState, useEffect } from "react";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { ArrowUpRight } from "lucide-react";
-
-const activity = [
-  { name: "Priya Sharma", flat: "B-1204", action: "Paid maintenance", amount: "₹4,500", status: "paid", time: "2m ago" },
-  { name: "Rohan Mehta", flat: "A-301", action: "Filed complaint — leakage", amount: "—", status: "open", time: "12m ago" },
-  { name: "Ananya Iyer", flat: "C-805", action: "Booked Clubhouse", amount: "₹1,200", status: "paid", time: "1h ago" },
-  { name: "Vikram Patel", flat: "D-110", action: "Visitor entry approved", amount: "—", status: "info", time: "2h ago" },
-  { name: "Sneha Nair", flat: "B-602", action: "Bill overdue", amount: "₹4,500", status: "overdue", time: "5h ago" },
-];
 
 const toneFor = (s: string) => {
   if (s === "paid") return "success" as const;
   if (s === "overdue") return "destructive" as const;
-  if (s === "open") return "warning" as const;
+  if (s === "pending") return "warning" as const;
   return "info" as const;
 };
 
 const labelFor = (s: string) => {
   if (s === "paid") return "Paid";
   if (s === "overdue") return "Overdue";
-  if (s === "open") return "Open";
+  if (s === "pending") return "Pending";
   return "Info";
 };
 
 export const RecentActivity = () => {
+  const [activity, setActivity] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetch("http://localhost:5000/api/bills")
+      .then(res => res.json())
+      .then(data => setActivity(data.slice(0, 5)))
+      .catch(err => console.error(err));
+  }, []);
   return (
     <div className="surface-card p-6">
       <div className="flex items-center justify-between mb-5">
@@ -48,25 +49,25 @@ export const RecentActivity = () => {
             </tr>
           </thead>
           <tbody>
-            {activity.map((a) => (
-              <tr key={a.name} className="border-t border-border/60 hover:bg-secondary/50 transition-colors">
+             {activity.map((a: any) => (
+              <tr key={a.id} className="border-t border-border/60 hover:bg-secondary/50 transition-colors">
                 <td className="px-2 py-3.5">
                   <div className="flex items-center gap-3">
                     <div className="h-9 w-9 rounded-lg bg-primary-soft text-primary flex items-center justify-center text-[11px] font-semibold">
-                      {a.name.split(" ").map((n) => n[0]).join("")}
+                      {(a.resident_name || "??").split(" ").map((n: string) => n[0]).join("")}
                     </div>
                     <div className="leading-tight">
-                      <p className="font-semibold">{a.name}</p>
-                      <p className="text-[11px] text-muted-foreground mt-0.5 mono">Flat {a.flat}</p>
+                      <p className="font-semibold">{a.resident_name}</p>
+                      <p className="text-[11px] text-muted-foreground mt-0.5 mono">Flat {a.unit_number}</p>
                     </div>
                   </div>
                 </td>
-                <td className="px-2 py-3.5 text-muted-foreground">{a.action}</td>
-                <td className="px-2 py-3.5 font-semibold tabular-nums">{a.amount}</td>
+                <td className="px-2 py-3.5 text-muted-foreground">Maintenance Bill</td>
+                <td className="px-2 py-3.5 font-semibold tabular-nums">₹{Number(a.amount).toLocaleString()}</td>
                 <td className="px-2 py-3.5">
                   <StatusBadge tone={toneFor(a.status)}>{labelFor(a.status)}</StatusBadge>
                 </td>
-                <td className="px-2 py-3.5 text-right text-[11.5px] text-muted-foreground tabular-nums">{a.time}</td>
+                <td className="px-2 py-3.5 text-right text-[11.5px] text-muted-foreground tabular-nums">{a.due_date}</td>
               </tr>
             ))}
           </tbody>
