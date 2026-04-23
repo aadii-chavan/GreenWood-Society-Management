@@ -128,6 +128,23 @@ app.post('/api/visitors', (req, res) => {
     });
 });
 
+// 6. Stats
+app.get('/api/stats/revenue', (req, res) => {
+    const sql = `
+        SELECT 
+            DATE_FORMAT(due_date, '%b') as month,
+            SUM(CASE WHEN status = 'paid' THEN amount ELSE 0 END) / 1000 as collected,
+            SUM(CASE WHEN status = 'pending' THEN amount ELSE 0 END) / 1000 as pending
+        FROM bills
+        GROUP BY month, MONTH(due_date)
+        ORDER BY MONTH(due_date) ASC`;
+    
+    db.query(sql, (err, data) => {
+        if (err) return res.status(500).json(err);
+        return res.json(data);
+    });
+});
+
 // Start Server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

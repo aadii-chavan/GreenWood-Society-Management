@@ -1,19 +1,43 @@
+import { useState, useEffect } from "react";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { ArrowUpRight } from "lucide-react";
-
-const data = [
-  { month: "Jan", collected: 420, pending: 80 },
-  { month: "Feb", collected: 480, pending: 70 },
-  { month: "Mar", collected: 510, pending: 95 },
-  { month: "Apr", collected: 460, pending: 60 },
-  { month: "May", collected: 540, pending: 110 },
-  { month: "Jun", collected: 590, pending: 75 },
-  { month: "Jul", collected: 620, pending: 90 },
-  { month: "Aug", collected: 580, pending: 100 },
-  { month: "Sep", collected: 650, pending: 65 },
-];
+import { ArrowUpRight, Loader2 } from "lucide-react";
 
 export const RevenueChart = () => {
+  const [data, setData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [totalCollected, setTotalCollected] = useState(0);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/api/stats/revenue");
+        const result = await response.json();
+        setData(result);
+        
+        const total = result.reduce((sum: number, item: any) => sum + Number(item.collected), 0);
+        setTotalCollected(total);
+      } catch (error) {
+        console.error("Error fetching revenue stats:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="surface-card p-6 h-[400px] flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  const formatCurrency = (val: number) => {
+    if (val >= 100) return `₹${(val / 100).toFixed(1)}L`;
+    return `₹${val.toFixed(1)}K`;
+  };
+
   return (
     <div className="surface-card p-6">
       <div className="flex items-start justify-between mb-1">
@@ -21,7 +45,7 @@ export const RevenueChart = () => {
           <p className="eyebrow">Revenue · YTD</p>
           <h3 className="display-text text-[19px] font-bold mt-1.5">Maintenance Collection</h3>
           <div className="flex items-baseline gap-2 mt-2">
-            <span className="display-text text-[26px] font-bold tabular-nums leading-none">₹48.5L</span>
+            <span className="display-text text-[26px] font-bold tabular-nums leading-none">{formatCurrency(totalCollected)}</span>
             <span className="inline-flex items-center gap-1 text-[11.5px] font-semibold text-success bg-success/10 px-1.5 py-0.5 rounded-md">
               <ArrowUpRight className="h-3 w-3" /> 12.4%
             </span>
