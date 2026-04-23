@@ -132,12 +132,12 @@ app.post('/api/visitors', (req, res) => {
 app.get('/api/stats/revenue', (req, res) => {
     const sql = `
         SELECT 
-            DATE_FORMAT(due_date, '%b') as month,
+            DATE_FORMAT(STR_TO_DATE(due_date, '%d %b %Y'), '%b') as month,
             SUM(CASE WHEN status = 'paid' THEN amount ELSE 0 END) / 1000 as collected,
             SUM(CASE WHEN status = 'pending' THEN amount ELSE 0 END) / 1000 as pending
         FROM bills
-        GROUP BY month, MONTH(due_date)
-        ORDER BY MONTH(due_date) ASC`;
+        GROUP BY month, MONTH(STR_TO_DATE(due_date, '%d %b %Y'))
+        ORDER BY MONTH(STR_TO_DATE(due_date, '%d %b %Y')) ASC`;
     
     db.query(sql, (err, data) => {
         if (err) return res.status(500).json(err);
