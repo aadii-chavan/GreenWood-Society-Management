@@ -78,8 +78,8 @@ const Residents = () => {
 
     // Phone Validation
     const phoneDigits = newResident.phone.replace(/\D/g, "");
-    if (phoneDigits.length > 19) {
-      toast.error("Phone number cannot exceed 19 digits");
+    if (phoneDigits.length !== 10) {
+      toast.error("Phone number must be exactly 10 digits");
       return;
     }
 

@@ -27,8 +27,8 @@ const Settings = () => {
 
     // Phone Validation
     const phoneDigits = profile.phone.replace(/\D/g, "");
-    if (phoneDigits.length > 19) {
-      toast.error("Phone number cannot exceed 19 digits");
+    if (phoneDigits.length !== 10) {
+      toast.error("Phone number must be exactly 10 digits");
       return;
     }
 
