@@ -31,8 +31,15 @@ export const AddNoticeDialog = ({ open, onOpenChange, onAdd }: AddNoticeDialogPr
   });
 
   const handleAdd = () => {
-    if (!newNotice.title || !newNotice.body) {
-      toast.error("Please fill in the title and body of the notice");
+    if (!newNotice.title || !newNotice.body || !newNotice.by) {
+      toast.error("Please fill in all required fields");
+      return;
+    }
+
+    // Name Validation for 'Posted By'
+    const nameRegex = /^[a-zA-Z\s]{2,50}$/;
+    if (!nameRegex.test(newNotice.by)) {
+      toast.error("Posted By name should only contain letters");
       return;
     }
     

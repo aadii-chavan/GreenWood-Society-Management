@@ -69,6 +69,27 @@ const Residents = () => {
       return;
     }
 
+    // Name Validation
+    const nameRegex = /^[a-zA-Z\s]{2,50}$/;
+    if (!nameRegex.test(newResident.name)) {
+      toast.error("Name should only contain letters");
+      return;
+    }
+
+    // Phone Validation
+    const phoneDigits = newResident.phone.replace(/\D/g, "");
+    if (phoneDigits.length > 19) {
+      toast.error("Phone number cannot exceed 19 digits");
+      return;
+    }
+
+    // Email Validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]*com[^\s@]*$/;
+    if (newResident.email && !emailRegex.test(newResident.email)) {
+      toast.error("Email must contain @ and .com");
+      return;
+    }
+
     try {
         const response = await fetch("http://localhost:5001/api/residents", {
             method: "POST",

@@ -30,10 +30,37 @@ export const AddResidentDialog = ({ open, onOpenChange, onAdd }: AddResidentDial
   });
 
   const handleAdd = () => {
+    // Basic Required Fields
     if (!newResident.name || !newResident.flat) {
       toast.error("Please fill in all required fields");
       return;
     }
+
+    // Name Validation (Letters and spaces only)
+    const nameRegex = /^[a-zA-Z\s]{2,50}$/;
+    if (!nameRegex.test(newResident.name)) {
+      toast.error("Please enter a valid name (letters only, 2-50 chars)");
+      return;
+    }
+
+    // Phone Validation (Exactly 10 digits)
+    const phoneDigits = newResident.phone.replace(/\D/g, "");
+    if (phoneDigits.length !== 10) {
+      toast.error("Phone number must be exactly 10 digits");
+      return;
+    }
+
+    // Email Validation (@ and .com)
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]*com[^\s@]*$/; 
+    // Relaxed slightly to catch .com anywhere in the TLD part if needed, 
+    // but the user specifically said "@ and .com"
+    const simpleEmailRegex = /^[^\s@]+@[^\s@]+\..*com.*$/;
+    
+    if (newResident.email && !simpleEmailRegex.test(newResident.email)) {
+      toast.error("Email must contain @ and .com");
+      return;
+    }
+
     if (onAdd) onAdd(newResident);
     onOpenChange(false);
     setNewResident({ name: "", flat: "", phone: "", email: "", type: "Owner", status: "active" });

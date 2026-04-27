@@ -3,14 +3,14 @@ USE greenwood_db;
 
 -- 1. Insert Residents (8 Users)
 INSERT INTO residents (full_name, email, phone, unit_number, resident_type, status, joined_date) VALUES
-('Priya Sharma', 'priya.s@mail.com', '+91 98201 23456', 'B-1204', 'Owner', 'active', '2024-01-15'),
-('Rohan Mehta', 'rohan.m@mail.com', '+91 99800 11223', 'A-301', 'Tenant', 'active', '2024-02-10'),
-('Anjali Gupta', 'anjali.g@mail.com', '+91 91234 56789', 'C-502', 'Owner', 'active', '2023-11-20'),
-('Vikram Singh', 'vikram.v@mail.com', '+91 98765 43210', 'D-101', 'Owner', 'inactive', '2023-05-12'),
-('Suresh Iyer', 'suresh.i@mail.com', '+91 95000 11111', 'A-704', 'Owner', 'active', '2022-09-30'),
-('Meera Reddy', 'meera.r@mail.com', '+91 94444 22222', 'B-302', 'Tenant', 'active', '2024-03-05'),
-('Aditya Chavan', 'aditya.c@mail.com', '+91 98888 77777', 'C-101', 'Owner', 'active', '2023-08-15'),
-('Sneha Patil', 'sneha.p@mail.com', '+91 97777 66666', 'D-505', 'Tenant', 'active', '2024-04-01');
+('Priya Sharma', 'priya.s@mail.com', '+91 98201 23456', 'B-1204', 'Owner', 'active', '2026-04-15'),
+('Rohan Mehta', 'rohan.m@mail.com', '+91 99800 11223', 'A-301', 'Tenant', 'active', '2026-04-10'),
+('Anjali Gupta', 'anjali.g@mail.com', '+91 91234 56789', 'C-502', 'Owner', 'active', '2026-04-20'),
+('Vikram Singh', 'vikram.v@mail.com', '+91 98765 43210', 'D-101', 'Owner', 'inactive', '2026-03-12'),
+('Suresh Iyer', 'suresh.i@mail.com', '+91 95000 11111', 'A-704', 'Owner', 'active', '2026-04-25'),
+('Meera Reddy', 'meera.r@mail.com', '+91 94444 22222', 'B-302', 'Tenant', 'active', '2026-04-05'),
+('Aditya Chavan', 'aditya.c@mail.com', '+91 98888 77777', 'C-101', 'Owner', 'active', '2026-04-15'),
+('Sneha Patil', 'sneha.p@mail.com', '+91 97777 66666', 'D-505', 'Tenant', 'active', '2026-04-01');
 
 -- 2. Insert Bills
 INSERT INTO bills (id, resident_id, resident_name, unit_number, amount, due_date, status) VALUES

@@ -40,7 +40,7 @@ const parseDateString = (dateStr: string) => {
 };
 
 const Index = () => {
-  const [timeRange, setTimeRange] = useState<'this-month' | 'all-time'>('this-month');
+  const [timeRange, setTimeRange] = useState<'this-month' | 'all-time'>('all-time');
   const [data, setData] = useState({
     residents: [] as any[],
     bills: [] as any[],

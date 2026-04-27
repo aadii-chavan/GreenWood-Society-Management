@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { AppShell } from "@/components/layout/AppShell";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -9,7 +10,35 @@ import { User, Lock, Bell, Building, Save, Camera } from "lucide-react";
 import { toast } from "sonner";
 
 const Settings = () => {
+  const [profile, setProfile] = useState({
+    name: "ADITYA CHAVAN",
+    email: "admin@greenwood.in",
+    phone: "+91 98201 23456",
+    designation: "Chief Administrator"
+  });
+
   const handleSave = () => {
+    // Name Validation
+    const nameRegex = /^[a-zA-Z\s]{2,50}$/;
+    if (!nameRegex.test(profile.name)) {
+      toast.error("Name should only contain letters");
+      return;
+    }
+
+    // Phone Validation
+    const phoneDigits = profile.phone.replace(/\D/g, "");
+    if (phoneDigits.length > 19) {
+      toast.error("Phone number cannot exceed 19 digits");
+      return;
+    }
+
+    // Email Validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]*com[^\s@]*$/;
+    if (profile.email && !emailRegex.test(profile.email)) {
+      toast.error("Email must contain @ and .com");
+      return;
+    }
+
     toast.success("Settings updated successfully");
   };
 
@@ -58,19 +87,35 @@ const Settings = () => {
                 <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label className="text-[13px] font-semibold">Full Name</Label>
-                    <Input defaultValue="ADITYA CHAVAN" className="bg-secondary/30" />
+                    <Input 
+                      value={profile.name} 
+                      onChange={(e) => setProfile({...profile, name: e.target.value})}
+                      className="bg-secondary/30" 
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label className="text-[13px] font-semibold">Email Address</Label>
-                    <Input defaultValue="admin@greenwood.in" className="bg-secondary/30" />
+                    <Input 
+                      value={profile.email} 
+                      onChange={(e) => setProfile({...profile, email: e.target.value})}
+                      className="bg-secondary/30" 
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label className="text-[13px] font-semibold">Phone Number</Label>
-                    <Input defaultValue="+91 98201 23456" className="bg-secondary/30" />
+                    <Input 
+                      value={profile.phone} 
+                      onChange={(e) => setProfile({...profile, phone: e.target.value})}
+                      className="bg-secondary/30" 
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label className="text-[13px] font-semibold">Designation</Label>
-                    <Input defaultValue="Chief Administrator" className="bg-secondary/30" />
+                    <Input 
+                      value={profile.designation} 
+                      onChange={(e) => setProfile({...profile, designation: e.target.value})}
+                      className="bg-secondary/30" 
+                    />
                   </div>
                 </div>
               </div>

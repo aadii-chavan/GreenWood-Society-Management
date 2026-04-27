@@ -32,6 +32,14 @@ export const AddVisitorDialog = ({ open, onOpenChange, onAdd }: AddVisitorDialog
       toast.error("Please fill in visitor name and host flat");
       return;
     }
+
+    // Name Validation
+    const nameRegex = /^[a-zA-Z\s]{2,50}$/;
+    if (!nameRegex.test(visitor.name)) {
+      toast.error("Please enter a valid name (letters only)");
+      return;
+    }
+
     if (onAdd) onAdd(visitor);
     onOpenChange(false);
     toast.success(`Entry logged for ${visitor.name}. Notification sent to flat ${visitor.host}.`);
