@@ -43,6 +43,54 @@ CREATE TABLE IF NOT EXISTS complaints (
     resolved_at TIMESTAMP NULL
 );
 
+-- =============================================
+-- 6. TRIGGERS
+-- =============================================
+
+DELIMITER //
+
+-- Trigger to automatically set resolved_at when a complaint is resolved
+CREATE TRIGGER before_complaint_update 
+BEFORE UPDATE ON complaints
+FOR EACH ROW
+BEGIN
+    IF NEW.status = 'resolved' AND OLD.status != 'resolved' THEN
+        SET NEW.resolved_at = CURRENT_TIMESTAMP;
+    END IF;
+END //
+
+-- Trigger to prevent negative bill amounts
+CREATE TRIGGER before_bill_insert
+BEFORE INSERT ON bills
+FOR EACH ROW
+BEGIN
+    IF NEW.amount < 0 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Bill amount cannot be negative';
+    END IF;
+END //
+
+DELIMITER ;
+
+-- =============================================
+-- 7. FUNCTIONS
+-- =============================================
+
+DELIMITER //
+
+-- Function to calculate total pending dues for a resident
+CREATE FUNCTION get_resident_pending_total(res_name VARCHAR(255)) 
+RETURNS DECIMAL(10,2)
+DETERMINISTIC
+BEGIN
+    DECLARE total_due DECIMAL(10,2);
+    SELECT SUM(amount) INTO total_due 
+    FROM bills 
+    WHERE resident_name = res_name AND status IN ('pending', 'overdue');
+    RETURN IFNULL(total_due, 0.00);
+END //
+
+DELIMITER ;
+
 -- 4. Notices Table
 CREATE TABLE IF NOT EXISTS notices (
     id INT AUTO_INCREMENT PRIMARY KEY,

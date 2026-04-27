@@ -37,6 +37,7 @@
 ### [![Security](https://img.shields.io/badge/Security-Visitors-000000?style=for-the-badge)]()
 - **Visitor Logs**: Real-time tracking of entries and exits.
 - **Pre-approvals**: Streamlined process for expected guests and deliveries.
+- **Advanced Logic**: MySQL **Triggers** and **Functions** handle data integrity and complex calculations on the server side.
 
 ---
 
