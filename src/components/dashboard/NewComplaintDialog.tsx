@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -21,28 +21,42 @@ interface NewComplaintDialogProps {
 }
 
 export const NewComplaintDialog = ({ open, onOpenChange, onSubmit }: NewComplaintDialogProps) => {
+  const [residents, setResidents] = useState<any[]>([]);
   const [complaint, setComplaint] = useState({
     title: "",
     category: "Plumbing",
     priority: "medium",
     description: "",
-    resident: "Rohan Mehta (A-301)"
+    resident_id: "",
+    resident_name: "",
+    unit_number: ""
   });
 
+  useEffect(() => {
+    if (open) {
+      fetch("http://localhost:5001/api/residents")
+        .then(res => res.json())
+        .then(data => setResidents(data))
+        .catch(err => console.error("Error fetching residents:", err));
+    }
+  }, [open]);
+
   const handleSubmit = () => {
-    if (!complaint.title || !complaint.description) {
-      toast.error("Please fill in all required fields");
+    if (!complaint.title || !complaint.description || !complaint.resident_name) {
+      toast.error("Please fill in all required fields including resident");
       return;
     }
     if (onSubmit) onSubmit(complaint);
     onOpenChange(false);
-    toast.success("Complaint registered successfully! A technician will be assigned soon.");
+    toast.success("Complaint registered successfully!");
     setComplaint({
       title: "",
       category: "Plumbing",
       priority: "medium",
       description: "",
-      resident: "Rohan Mehta (A-301)"
+      resident_id: "",
+      resident_name: "",
+      unit_number: ""
     });
   };
 
@@ -107,6 +121,35 @@ export const NewComplaintDialog = ({ open, onOpenChange, onSubmit }: NewComplain
                   </SelectContent>
                 </Select>
               </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label className="text-[13px] font-semibold">Select Resident / Flat</Label>
+              <Select 
+                value={complaint.resident_id} 
+                onValueChange={(id) => {
+                  const res = residents.find(r => r.id.toString() === id);
+                  if (res) {
+                    setComplaint({
+                      ...complaint, 
+                      resident_id: id,
+                      resident_name: res.full_name,
+                      unit_number: res.unit_number
+                    });
+                  }
+                }}
+              >
+                <SelectTrigger className="bg-secondary/40 border-border/60 rounded-xl h-11">
+                  <SelectValue placeholder="Choose resident..." />
+                </SelectTrigger>
+                <SelectContent className="rounded-xl border-border/60">
+                  {residents.map((r: any) => (
+                    <SelectItem key={r.id} value={r.id.toString()}>
+                      {r.unit_number} - {r.full_name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="space-y-2">

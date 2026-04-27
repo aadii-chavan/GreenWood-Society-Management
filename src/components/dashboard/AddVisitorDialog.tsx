@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -20,15 +20,25 @@ interface AddVisitorDialogProps {
 }
 
 export const AddVisitorDialog = ({ open, onOpenChange, onAdd }: AddVisitorDialogProps) => {
+  const [residents, setResidents] = useState<any[]>([]);
   const [visitor, setVisitor] = useState({
     name: "",
     purpose: "Guest",
-    host: "",
+    host_unit: "",
     vehicle: ""
   });
 
+  useEffect(() => {
+    if (open) {
+      fetch("http://localhost:5001/api/residents")
+        .then(res => res.json())
+        .then(data => setResidents(data))
+        .catch(err => console.error("Error fetching residents:", err));
+    }
+  }, [open]);
+
   const handleAdd = () => {
-    if (!visitor.name || !visitor.host) {
+    if (!visitor.name || !visitor.host_unit) {
       toast.error("Please fill in visitor name and host flat");
       return;
     }
@@ -42,17 +52,11 @@ export const AddVisitorDialog = ({ open, onOpenChange, onAdd }: AddVisitorDialog
 
     if (onAdd) onAdd(visitor);
     onOpenChange(false);
-    toast.success(`Entry logged for ${visitor.name}. Notification sent to flat ${visitor.host}.`);
-    setVisitor({ name: "", purpose: "Guest", host: "", vehicle: "" });
+    toast.success(`Entry logged for ${visitor.name}. Notification sent to flat ${visitor.host_unit}.`);
+    setVisitor({ name: "", purpose: "Guest", host_unit: "", vehicle: "" });
   };
 
-  const commonHosts = [
-    "B-1204 (Priya Sharma)",
-    "A-301 (Rohan Mehta)",
-    "C-805 (Ananya Iyer)",
-    "B-602 (Sneha Nair)",
-    "D-110 (Vikram Patel)"
-  ];
+
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -117,15 +121,17 @@ export const AddVisitorDialog = ({ open, onOpenChange, onAdd }: AddVisitorDialog
             <div className="space-y-2">
               <Label className="text-[13px] font-semibold">Host Flat</Label>
               <Select 
-                value={visitor.host} 
-                onValueChange={(v) => setVisitor({...visitor, host: v})}
+                value={visitor.host_unit} 
+                onValueChange={(v) => setVisitor({...visitor, host_unit: v})}
               >
                 <SelectTrigger className="bg-secondary/40 border-border/60 rounded-xl h-11">
                   <SelectValue placeholder="Select host flat" />
                 </SelectTrigger>
                 <SelectContent className="rounded-xl border-border/60">
-                  {commonHosts.map(h => (
-                    <SelectItem key={h} value={h}>{h}</SelectItem>
+                  {residents.map((r: any) => (
+                    <SelectItem key={r.id} value={r.unit_number}>
+                      {r.unit_number} ({r.full_name})
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>

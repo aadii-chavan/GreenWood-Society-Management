@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS complaints (
     title VARCHAR(255) NOT NULL,
     category VARCHAR(100),
     priority ENUM('high', 'medium', 'low') DEFAULT 'medium',
-    status ENUM('open', 'progress', 'resolved') DEFAULT 'open',
+    status ENUM('open', 'pending', 'resolved') DEFAULT 'open',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     resolved_at TIMESTAMP NULL
 );

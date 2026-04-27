@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -20,31 +20,44 @@ interface GenerateBillDialogProps {
 }
 
 export const GenerateBillDialog = ({ open, onOpenChange, onGenerate }: GenerateBillDialogProps) => {
+  const [residents, setResidents] = useState<any[]>([]);
   const [bill, setBill] = useState({
-    resident: "",
+    resident_id: "",
+    resident_name: "",
+    unit_number: "",
     month: "April 2026",
     amount: "4500",
     type: "Maintenance"
   });
 
+  useEffect(() => {
+    if (open) {
+      fetch("http://localhost:5001/api/residents")
+        .then(res => res.json())
+        .then(data => setResidents(data))
+        .catch(err => console.error("Error fetching residents:", err));
+    }
+  }, [open]);
+
   const handleGenerate = () => {
-    if (!bill.resident || !bill.amount) {
+    if (!bill.resident_name || !bill.amount) {
       toast.error("Please fill in all required fields");
       return;
     }
     if (onGenerate) onGenerate(bill);
     onOpenChange(false);
-    toast.success(`Bill generated successfully for ${bill.resident}!`);
+    toast.success(`Bill generated successfully for ${bill.resident_name}!`);
+    setBill({
+      resident_id: "",
+      resident_name: "",
+      unit_number: "",
+      month: "April 2026",
+      amount: "4500",
+      type: "Maintenance"
+    });
   };
 
-  const residents = [
-    "Priya Sharma (B-1204)",
-    "Rohan Mehta (A-301)",
-    "Ananya Iyer (C-805)",
-    "Sneha Nair (B-602)",
-    "Vikram Patel (D-110)",
-    "Arjun Kapoor (A-1002)"
-  ];
+
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -64,15 +77,27 @@ export const GenerateBillDialog = ({ open, onOpenChange, onGenerate }: GenerateB
             <div className="space-y-2">
               <Label className="text-[13px] font-semibold">Select Resident</Label>
               <Select 
-                value={bill.resident} 
-                onValueChange={(v) => setBill({...bill, resident: v})}
+                value={bill.resident_id} 
+                onValueChange={(id) => {
+                  const res = residents.find(r => r.id.toString() === id);
+                  if (res) {
+                    setBill({
+                      ...bill, 
+                      resident_id: id,
+                      resident_name: res.full_name,
+                      unit_number: res.unit_number
+                    });
+                  }
+                }}
               >
                 <SelectTrigger className="bg-secondary/40 border-border/60 rounded-xl h-11">
                   <SelectValue placeholder="Choose resident..." />
                 </SelectTrigger>
                 <SelectContent className="rounded-xl border-border/60">
-                  {residents.map(r => (
-                    <SelectItem key={r} value={r}>{r}</SelectItem>
+                  {residents.map((r: any) => (
+                    <SelectItem key={r.id} value={r.id.toString()}>
+                      {r.unit_number} - {r.full_name}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>

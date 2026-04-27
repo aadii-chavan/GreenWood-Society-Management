@@ -44,7 +44,7 @@ const Bills = () => {
     toast.success(`Bill marked as ${status}!`);
 
     try {
-      await fetch(`http://localhost:5000/api/bills/${id}`, {
+      await fetch(`http://localhost:5001/api/bills/${encodeURIComponent(id)}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status })
@@ -57,8 +57,9 @@ const Bills = () => {
   const handleGenerate = async (newBill: any) => {
     const generatedBill = {
         id: `INV-2025-0${Math.floor(Math.random() * 1000)}`,
-        resident_name: "Mock Resident", // In a real app, this would be selected
-        unit_number: "A-101",
+        resident_id: newBill.resident_id,
+        resident_name: newBill.resident_name,
+        unit_number: newBill.unit_number,
         amount: newBill.amount,
         due_date: "30 May 2026",
         status: "pending"

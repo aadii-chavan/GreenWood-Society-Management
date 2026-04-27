@@ -23,7 +23,7 @@ INSERT INTO bills (id, resident_id, resident_name, unit_number, amount, due_date
 -- 3. Insert Complaints
 INSERT INTO complaints (id, resident_name, unit_number, title, category, priority, status, created_at) VALUES
 ('#C-1001', 'Rohan Mehta', 'A-301', 'Water leakage in ceiling', 'Plumbing', 'high', 'open', '2026-04-26 10:00:00'),
-('#C-1002', 'Priya Sharma', 'B-1204', 'Elevator not working', 'Maintenance', 'medium', 'progress', '2026-04-25 09:30:00'),
+('#C-1002', 'Priya Sharma', 'B-1204', 'Elevator not working', 'Maintenance', 'medium', 'pending', '2026-04-25 09:30:00'),
 ('#C-1003', 'Anjali Gupta', 'C-502', 'Noise from neighbor', 'Security', 'low', 'resolved', '2026-04-24 22:15:00'),
 ('#C-1004', 'Meera Reddy', 'B-302', 'Basement light broken', 'Maintenance', 'low', 'open', '2026-04-27 08:00:00');
 

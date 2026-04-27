@@ -95,6 +95,14 @@ app.patch('/api/complaints/:id/resolve', (req, res) => {
   });
 });
 
+app.patch('/api/complaints/:id/status', (req, res) => {
+  const { status } = req.body;
+  db.query('UPDATE complaints SET status = ? WHERE id = ?', [status, req.params.id], (err, result) => {
+    if (err) return res.status(500).json(err);
+    res.json({ message: 'Complaint status updated' });
+  });
+});
+
 // 4. Visitors
 app.get('/api/visitors', (req, res) => {
   db.query('SELECT * FROM visitors ORDER BY created_at DESC', (err, results) => {

@@ -6,6 +6,8 @@
 [![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![ShadcnUI](https://img.shields.io/badge/Shadcn_UI-000000?style=for-the-badge&logo=shadcnui&logoColor=white)](https://ui.shadcn.com/)
+[![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white)](https://www.mysql.com/)
+[![NodeJS](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)](https://nodejs.org/)
 
 **SocietyHub** is a sophisticated, high-performance society management platform designed to streamline residential operations. Built with a focus on modern aesthetics (Glassmorphism, Dark Mode) and seamless user experience, it provides a centralized hub for residents and administrators to manage bills, complaints, notices, and visitors.
 
@@ -19,9 +21,9 @@
 - **Dynamic Calendar**: View upcoming society events and deadlines at a glance.
 
 ### [![Financial](https://img.shields.io/badge/Financial-Management-38B2AC?style=for-the-badge)]()
-- **Automated Billing**: Effortlessly generate and track monthly maintenance bills.
-- **Status Tracking**: Monitor paid and pending dues with detailed breakdowns.
-- **History**: Maintain a comprehensive record of all financial transactions.
+- **Automated Billing**: Effortlessly generate and track monthly maintenance bills using real resident data.
+- **Status Tracking**: Standardized "Paid", "Pending", and "Overdue" statuses across the financial module.
+- **History**: Maintain a comprehensive record of all financial transactions in the MySQL database.
 
 ### [![Residents](https://img.shields.io/badge/Resident-Directory-007ACC?style=for-the-badge)]()
 - **Unified Management**: Searchable database of all residents with profile details.
@@ -30,7 +32,7 @@
 
 ### [![Communication](https://img.shields.io/badge/Communication-Hub-20232A?style=for-the-badge)]()
 - **Notice Board**: Digital board for broadcasting urgent updates and announcements.
-- **Complaint Tracking**: Systematic workflow for logging, tracking, and resolving resident grievances.
+- **Complaint Workflow**: Systematic lifecycle (Open → Pending → Resolved) for tracking and resolving resident grievances with real-time updates.
 
 ### [![Security](https://img.shields.io/badge/Security-Visitors-000000?style=for-the-badge)]()
 - **Visitor Logs**: Real-time tracking of entries and exits.
@@ -40,48 +42,43 @@
 
 ## [![Technical](https://img.shields.io/badge/Technical-Arsenal-FFD700?style=for-the-badge&logoColor=black)]()
 
-- **Core Framework**: [React 18](https://reactjs.org/) + [TypeScript](https://www.typescriptlang.org/)
-- **Build Tool**: [Vite](https://vitejs.dev/)
-- **Styling Engine**: [Tailwind CSS](https://tailwindcss.com/) with `tailwindcss-animate`
-- **UI Components**: [Shadcn UI](https://ui.shadcn.com/) (Radix UI primitives)
-- **Icons**: [Lucide React](https://lucide.dev/)
-- **Data Fetching**: [TanStack Query (FKA React Query)](https://tanstack.com/query/latest)
-- **Forms**: [React Hook Form](https://react-hook-form.com/) + [Zod](https://zod.dev/)
+- **Frontend**: [React 18](https://reactjs.org/) + [TypeScript](https://www.typescriptlang.org/) + [Vite](https://vitejs.dev/)
+- **Backend Engine**: [Node.js](https://nodejs.org/) + [Express](https://expressjs.com/)
+- **Database**: [MySQL 8.0+](https://www.mysql.com/)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
+- **UI Components**: [Shadcn UI](https://ui.shadcn.com/)
+- **Validation**: [Sonner](https://sonner.emilkowal.ski/) (Toasts) + Custom Regex Validation (Phone, Email, Name)
 - **Charts**: [Recharts](https://recharts.org/)
-- **Theme Management**: `next-themes` (Seamless Dark/Light mode)
+- **Date Management**: [date-fns](https://date-fns.org/)
 
 ---
 
 ## [![Getting Started](https://img.shields.io/badge/Getting-Started-FF4500?style=for-the-badge)]()
 
-### Prerequisites
-- Node.js (v18 or higher)
-- npm or bun
+### Database Setup
 
-### Installation
+1. **Create Database**: Run the `Database.sql` file located in `backend/DB/` in your MySQL Workbench.
+2. **Populate Data**: Run the `users.sql` file in the same directory to add mock residents and initial data.
+3. **Configure Environment**: Update `backend/.env` with your MySQL credentials.
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/aadii-chavan/society-hub.git
-   cd society-hub
-   ```
+### Installation & Execution
 
-2. **Install dependencies**
+1. **Install Frontend Dependencies**
    ```bash
    npm install
-   # or
-   bun install
    ```
 
-3. **Start the development server**
+2. **Install Backend Dependencies**
    ```bash
-   npm run dev
+   cd backend
+   npm install
    ```
 
-4. **Build for production**
-   ```bash
-   npm run build
-   ```
+3. **Start the Systems**
+   - **Frontend**: `npm run dev` (Runs on Port 5001)
+   - **Backend**: `npm start` (Runs on Port 5001)
+
+*Note: Port 5001 is used to avoid conflicts with macOS AirPlay services on Port 5000.*
 
 ---
 

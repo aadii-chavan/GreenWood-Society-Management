@@ -38,7 +38,7 @@ const Visitors = () => {
     toast.success("Visitor checked out!");
 
     try {
-      await fetch(`http://localhost:5000/api/visitors/${id}/checkout`, {
+      await fetch(`http://localhost:5001/api/visitors/${id}/checkout`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ exit_time: exitTime })
@@ -53,7 +53,7 @@ const Visitors = () => {
         id: Math.floor(Math.random() * 10000),
         name: newV.name,
         purpose: newV.purpose,
-        host_unit: newV.host.split(" (")[0],
+        host_unit: newV.host_unit,
         vehicle_number: newV.vehicle || "—",
         entry_time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }),
         exit_time: "—",
