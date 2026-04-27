@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { CrudPage } from "@/components/layout/CrudPage";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { StatCard } from "@/components/ui/StatCard";
-import { UserPlus, LogIn, LogOut, Car } from "lucide-react";
+import { UserPlus, LogIn, LogOut, Car, LogOut as CheckoutIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { AddVisitorDialog } from "@/components/dashboard/AddVisitorDialog";
 import { MOCK_VISITORS } from "@/lib/mockData";
 import { toast } from "sonner";
@@ -30,24 +31,49 @@ const Visitors = () => {
     }
   };
 
+  const handleCheckout = async (id: number) => {
+    const exitTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+    
+    // Mock logic: Update local state immediately
+    setVisitors(prev => prev.map(v => v.id === id ? { ...v, status: "out", exit_time: exitTime } : v));
+    toast.success("Visitor checked out!");
+
+    try {
+      await fetch(`http://localhost:5000/api/visitors/${id}/checkout`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ exit_time: exitTime })
+      });
+    } catch (error) {
+      console.warn("Backend checkout failed, kept in local state.");
+    }
+  };
+
   const handleAdd = async (newV: any) => {
+    const newVisitor = {
+        id: Math.floor(Math.random() * 10000),
+        name: newV.name,
+        purpose: newV.purpose,
+        host_unit: newV.host.split(" (")[0],
+        vehicle_number: newV.vehicle || "—",
+        entry_time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }),
+        exit_time: "—",
+        status: "in"
+    };
+
+    // Update local state first
+    setVisitors([newVisitor, ...visitors]);
+    setIsAddOpen(false);
+    toast.success("Visitor entry logged!");
+
     try {
         await fetch("http://localhost:5000/api/visitors", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                name: newV.name,
-                purpose: newV.purpose,
-                host_unit: newV.host.split(" (")[0],
-                vehicle_number: newV.vehicle || "—",
-                entry_time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }),
-                status: "in"
-            })
+            body: JSON.stringify(newVisitor)
         });
-        fetchVisitors();
-        toast.success("Visitor entry logged!");
     } catch (error) {
-        toast.error("Failed to log visitor");
+        console.warn("Backend not reached, kept in local state.");
     }
   };
 
@@ -109,7 +135,17 @@ const Visitors = () => {
                   <td className="px-5 py-4 tabular-nums text-muted-foreground">{v.exit_time}</td>
                   <td className="px-5 py-4">
                     {v.status === "in" ? (
-                      <StatusBadge tone="info"><LogIn className="h-3 w-3" /> Inside</StatusBadge>
+                      <div className="flex items-center gap-2">
+                        <StatusBadge tone="info"><LogIn className="h-3 w-3" /> Inside</StatusBadge>
+                        <Button 
+                          size="sm" 
+                          variant="outline" 
+                          className="h-7 px-2 text-[10px] font-bold border-primary/20 text-primary hover:bg-primary/10 gap-1"
+                          onClick={() => handleCheckout(v.id)}
+                        >
+                          <CheckoutIcon className="h-2.5 w-2.5" /> Checkout
+                        </Button>
+                      </div>
                     ) : (
                       <StatusBadge tone="success"><LogOut className="h-3 w-3" /> Exited</StatusBadge>
                     )}

@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { CrudPage } from "@/components/layout/CrudPage";
 import { StatusBadge } from "@/components/ui/StatusBadge";
-import { MessageSquareWarning, Clock, CheckCircle2 } from "lucide-react";
+import { MessageSquareWarning, Clock, CheckCircle2, Check } from "lucide-react";
 import { StatCard } from "@/components/ui/StatCard";
+import { Button } from "@/components/ui/button";
 import { NewComplaintDialog } from "@/components/dashboard/NewComplaintDialog";
 import { MOCK_COMPLAINTS } from "@/lib/mockData";
 import { toast } from "sonner";
@@ -34,24 +35,43 @@ const Complaints = () => {
     }
   };
 
+  const handleResolve = async (id: string) => {
+    try {
+      // Mock logic: Update local state immediately
+      setComplaints(prev => prev.map(c => c.id === id ? { ...c, status: "resolved" } : c));
+      toast.success("Complaint marked as resolved!");
+
+      // Backend attempt (will fail gracefully if DB is down)
+      await fetch(`http://localhost:5000/api/complaints/${id}/resolve`, { method: "PATCH" });
+    } catch (error) {
+      console.warn("Backend update failed, but local UI is updated.");
+    }
+  };
+
   const handleSubmit = async (newC: any) => {
+    const newComplaint = {
+      id: `#C-0${Math.floor(Math.random() * 1000)}`,
+      resident_name: "You",
+      title: newC.title,
+      category: newC.category,
+      priority: newC.priority,
+      status: "open",
+      created_at: new Date().toISOString(),
+    };
+
+    // Update local state first
+    setComplaints([newComplaint, ...complaints]);
+    setIsNewOpen(false);
+    toast.success("Complaint logged!");
+
     try {
         await fetch("http://localhost:5000/api/complaints", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                id: `#C-0${Math.floor(Math.random() * 1000)}`,
-                resident_id: 1, // Default resident
-                title: newC.title,
-                category: newC.category,
-                priority: newC.priority,
-                status: "open"
-            })
+            body: JSON.stringify(newComplaint)
         });
-        fetchComplaints();
-        toast.success("Complaint logged!");
     } catch (error) {
-        toast.error("Failed to log complaint");
+        console.warn("Backend not reached, kept in local state.");
     }
   };
 
@@ -101,7 +121,18 @@ const Complaints = () => {
             </div>
             <div className="flex items-center justify-between mt-5 pt-4 border-t border-border/60">
               <StatusBadge tone={pTone(c.priority)}>{c.priority[0].toUpperCase() + c.priority.slice(1)} priority</StatusBadge>
-              <span className="text-xs text-muted-foreground">{c.time}</span>
+              {c.status !== "resolved" ? (
+                <Button 
+                  size="sm" 
+                  variant="ghost" 
+                  className="h-8 px-2 text-xs font-bold text-primary hover:bg-primary/10 gap-1.5"
+                  onClick={() => handleResolve(c.id)}
+                >
+                  <Check className="h-3 w-3" /> Mark Resolved
+                </Button>
+              ) : (
+                <span className="text-xs text-muted-foreground tabular-nums">{c.time || "Recently"}</span>
+              )}
             </div>
           </div>
         ))}

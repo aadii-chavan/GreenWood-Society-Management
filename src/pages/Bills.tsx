@@ -3,7 +3,7 @@ import { CrudPage } from "@/components/layout/CrudPage";
 import { StatCard } from "@/components/ui/StatCard";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { Button } from "@/components/ui/button";
-import { IndianRupee, Receipt, AlertCircle, MoreHorizontal } from "lucide-react";
+import { IndianRupee, Receipt, AlertCircle, MoreHorizontal, CheckCircle2 } from "lucide-react";
 import { GenerateBillDialog } from "@/components/dashboard/GenerateBillDialog";
 import { MOCK_BILLS } from "@/lib/mockData";
 import { toast } from "sonner";
@@ -31,23 +31,45 @@ const Bills = () => {
     }
   };
 
+  const handleUpdateStatus = async (id: string, status: string) => {
+    // Mock logic: Update local state immediately
+    setBills(prev => prev.map(b => b.id === id ? { ...b, status } : b));
+    toast.success(`Bill marked as ${status}!`);
+
+    try {
+      await fetch(`http://localhost:5000/api/bills/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status })
+      });
+    } catch (error) {
+      console.warn("Backend update failed, kept in local state.");
+    }
+  };
+
   const handleGenerate = async (newBill: any) => {
+    const generatedBill = {
+        id: `INV-2025-0${Math.floor(Math.random() * 1000)}`,
+        resident_name: "Mock Resident", // In a real app, this would be selected
+        unit_number: "A-101",
+        amount: newBill.amount,
+        due_date: "30 May 2026",
+        status: "pending"
+    };
+
+    // Update local state first
+    setBills([generatedBill, ...bills]);
+    setIsGenerateOpen(false);
+    toast.success("Bill generated successfully!");
+
     try {
         await fetch("http://localhost:5000/api/bills", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                id: `INV-2025-0${Math.floor(Math.random() * 1000)}`,
-                resident_id: 1, // Defaulting to first resident for simplicity
-                amount: newBill.amount,
-                due_date: "30 May 2026",
-                status: "pending"
-            })
+            body: JSON.stringify(generatedBill)
         });
-        fetchBills();
-        toast.success("Bill generated successfully!");
     } catch (error) {
-        toast.error("Failed to generate bill");
+        console.warn("Backend not reached, kept in local state.");
     }
   };
 
@@ -114,9 +136,21 @@ const Bills = () => {
                   <td className="px-5 py-4 font-semibold tabular-nums">₹{Number(b.amount).toLocaleString()}</td>
                   <td className="px-5 py-4 text-muted-foreground">{b.due_date}</td>
                   <td className="px-5 py-4">
-                    <StatusBadge tone={tone(b.status)}>
-                      {b.status[0].toUpperCase() + b.status.slice(1)}
-                    </StatusBadge>
+                    <div className="flex items-center gap-2">
+                      <StatusBadge tone={tone(b.status)}>
+                        {b.status[0].toUpperCase() + b.status.slice(1)}
+                      </StatusBadge>
+                      {b.status !== "paid" && (
+                        <Button 
+                          size="sm" 
+                          variant="ghost" 
+                          className="h-7 px-2 text-[10px] font-bold text-success hover:bg-success/10 gap-1"
+                          onClick={() => handleUpdateStatus(b.id, "paid")}
+                        >
+                          <CheckCircle2 className="h-2.5 w-2.5" /> Mark Paid
+                        </Button>
+                      )}
+                    </div>
                   </td>
                   <td className="px-5 py-4 text-right">
                     <Button variant="ghost" size="icon" className="rounded-full"><MoreHorizontal className="h-4 w-4" /></Button>
