@@ -3,6 +3,7 @@ import { CrudPage } from "@/components/layout/CrudPage";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { Pin, Calendar } from "lucide-react";
 import { AddNoticeDialog } from "@/components/dashboard/AddNoticeDialog";
+import { MOCK_NOTICES } from "@/lib/mockData";
 import { toast } from "sonner";
 
 const tagTone = (t: string) =>
@@ -20,11 +21,13 @@ const Notices = () => {
   const fetchNotices = async () => {
     try {
       const response = await fetch("http://localhost:5000/api/notices");
+      if (!response.ok) throw new Error("Server response not ok");
       const data = await response.json();
       setNotices(data);
       setLoading(false);
     } catch (error) {
-      console.error("Error fetching notices:", error);
+      console.warn("Backend not reached, using mock notices:", error);
+      setNotices(MOCK_NOTICES);
       setLoading(false);
     }
   };

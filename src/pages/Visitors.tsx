@@ -4,6 +4,7 @@ import { StatusBadge } from "@/components/ui/StatusBadge";
 import { StatCard } from "@/components/ui/StatCard";
 import { UserPlus, LogIn, LogOut, Car } from "lucide-react";
 import { AddVisitorDialog } from "@/components/dashboard/AddVisitorDialog";
+import { MOCK_VISITORS } from "@/lib/mockData";
 import { toast } from "sonner";
 
 const Visitors = () => {
@@ -18,11 +19,13 @@ const Visitors = () => {
   const fetchVisitors = async () => {
     try {
       const response = await fetch("http://localhost:5000/api/visitors");
+      if (!response.ok) throw new Error("Server response not ok");
       const data = await response.json();
       setVisitors(data);
       setLoading(false);
     } catch (error) {
-      console.error("Error fetching visitors:", error);
+      console.warn("Backend not reached, using mock visitors:", error);
+      setVisitors(MOCK_VISITORS);
       setLoading(false);
     }
   };

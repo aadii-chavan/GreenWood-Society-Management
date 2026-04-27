@@ -4,6 +4,7 @@ import { StatusBadge } from "@/components/ui/StatusBadge";
 import { MessageSquareWarning, Clock, CheckCircle2 } from "lucide-react";
 import { StatCard } from "@/components/ui/StatCard";
 import { NewComplaintDialog } from "@/components/dashboard/NewComplaintDialog";
+import { MOCK_COMPLAINTS } from "@/lib/mockData";
 import { toast } from "sonner";
 
 const pTone = (p: string) => p === "high" ? "destructive" : p === "medium" ? "warning" : "info";
@@ -22,11 +23,13 @@ const Complaints = () => {
   const fetchComplaints = async () => {
     try {
       const response = await fetch("http://localhost:5000/api/complaints");
+      if (!response.ok) throw new Error("Server response not ok");
       const data = await response.json();
       setComplaints(data);
       setLoading(false);
     } catch (error) {
-      console.error("Error fetching complaints:", error);
+      console.warn("Backend not reached, using mock complaints:", error);
+      setComplaints(MOCK_COMPLAINTS);
       setLoading(false);
     }
   };

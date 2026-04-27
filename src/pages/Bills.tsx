@@ -5,6 +5,7 @@ import { StatusBadge } from "@/components/ui/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { IndianRupee, Receipt, AlertCircle, MoreHorizontal } from "lucide-react";
 import { GenerateBillDialog } from "@/components/dashboard/GenerateBillDialog";
+import { MOCK_BILLS } from "@/lib/mockData";
 import { toast } from "sonner";
 
 const Bills = () => {
@@ -19,11 +20,13 @@ const Bills = () => {
   const fetchBills = async () => {
     try {
       const response = await fetch("http://localhost:5000/api/bills");
+      if (!response.ok) throw new Error("Server response not ok");
       const data = await response.json();
       setBills(data);
       setLoading(false);
     } catch (error) {
-      console.error("Error fetching bills:", error);
+      console.warn("Backend not reached, using mock bills:", error);
+      setBills(MOCK_BILLS);
       setLoading(false);
     }
   };

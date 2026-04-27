@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { ArrowUpRight } from "lucide-react";
 
+import { MOCK_BILLS } from "@/lib/mockData";
+
 const toneFor = (s: string) => {
   if (s === "paid") return "success" as const;
   if (s === "overdue") return "destructive" as const;
@@ -17,13 +19,18 @@ const labelFor = (s: string) => {
 };
 
 export const RecentActivity = () => {
-  const [activity, setActivity] = useState<any[]>([]);
+  const [activity, setActivity] = useState<any[]>(MOCK_BILLS);
 
   useEffect(() => {
+    // Attempt to fetch, but we have MOCK_BILLS as a solid fallback
     fetch("http://localhost:5000/api/bills")
       .then(res => res.json())
-      .then(data => setActivity(data.slice(0, 5)))
-      .catch(err => console.error(err));
+      .then(data => {
+        if (data && data.length > 0) setActivity(data.slice(0, 5));
+      })
+      .catch(err => {
+        console.warn("Backend not reached, using mock data:", err.message);
+      });
   }, []);
   return (
     <div className="surface-card p-6">

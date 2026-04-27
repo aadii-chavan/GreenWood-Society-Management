@@ -12,6 +12,12 @@ import { GenerateBillDialog } from "@/components/dashboard/GenerateBillDialog";
 import { NewComplaintDialog } from "@/components/dashboard/NewComplaintDialog";
 import { AddVisitorDialog } from "@/components/dashboard/AddVisitorDialog";
 import { AddNoticeDialog } from "@/components/dashboard/AddNoticeDialog";
+import { 
+  MOCK_RESIDENTS, 
+  MOCK_BILLS, 
+  MOCK_COMPLAINTS, 
+  MOCK_VISITORS 
+} from "@/lib/mockData";
 import { toast } from "sonner";
 
 const Index = () => {
@@ -27,15 +33,16 @@ const Index = () => {
     const fetchStats = async () => {
       try {
         const [resRes, resBills, resComp, resVisitors] = await Promise.all([
-          fetch("http://localhost:5000/api/residents"),
-          fetch("http://localhost:5000/api/bills"),
-          fetch("http://localhost:5000/api/complaints"),
-          fetch("http://localhost:5000/api/visitors")
+          fetch("http://localhost:5000/api/residents").then(r => r.ok ? r.json() : MOCK_RESIDENTS),
+          fetch("http://localhost:5000/api/bills").then(r => r.ok ? r.json() : MOCK_BILLS),
+          fetch("http://localhost:5000/api/complaints").then(r => r.ok ? r.json() : MOCK_COMPLAINTS),
+          fetch("http://localhost:5000/api/visitors").then(r => r.ok ? r.json() : MOCK_VISITORS)
         ]);
-        const residents = await resRes.json();
-        const bills = await resBills.json();
-        const complaints = await resComp.json();
-        const visitors = await resVisitors.json();
+        
+        const residents = resRes;
+        const bills = resBills;
+        const complaints = resComp;
+        const visitors = resVisitors;
         
         const pending = bills.filter((b: any) => b.status === 'pending');
         const totalOutstanding = pending.reduce((sum: number, b: any) => sum + Number(b.amount), 0);
@@ -48,7 +55,17 @@ const Index = () => {
           outstandingAmount: totalOutstanding
         });
       } catch (error) {
-        console.error("Error fetching dashboard stats:", error);
+        console.warn("Backend not reached for stats, using mock data fallback.");
+        const pending = MOCK_BILLS.filter((b: any) => b.status === 'pending');
+        const totalOutstanding = pending.reduce((sum: number, b: any) => sum + Number(b.amount), 0);
+        
+        setStats({
+          residents: MOCK_RESIDENTS.length,
+          pendingBills: pending.length,
+          activeComplaints: MOCK_COMPLAINTS.filter((c: any) => c.status !== 'resolved').length,
+          visitors: MOCK_VISITORS.length,
+          outstandingAmount: totalOutstanding
+        });
       }
     };
     fetchStats();

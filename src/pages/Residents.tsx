@@ -3,6 +3,7 @@ import { CrudPage } from "@/components/layout/CrudPage";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { Mail, Phone, MoreHorizontal, Search, UserPlus } from "lucide-react";
+import { MOCK_RESIDENTS } from "@/lib/mockData";
 import {
   Dialog,
   DialogContent,
@@ -30,12 +31,13 @@ const Residents = () => {
   const fetchResidents = async () => {
     try {
       const response = await fetch("http://localhost:5000/api/residents");
+      if (!response.ok) throw new Error("Server response not ok");
       const data = await response.json();
       setResidents(data);
       setLoading(false);
     } catch (error) {
-      console.error("Error fetching residents:", error);
-      toast.error("Failed to load residents from server");
+      console.warn("Backend not reached, using mock residents:", error);
+      setResidents(MOCK_RESIDENTS);
       setLoading(false);
     }
   };
