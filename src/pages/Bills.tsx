@@ -26,7 +26,7 @@ const Bills = () => {
 
   const fetchBills = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/bills");
+      const response = await fetch("http://localhost:5001/api/bills");
       if (!response.ok) throw new Error("Server response not ok");
       const data = await response.json();
       setBills(data);
@@ -70,7 +70,7 @@ const Bills = () => {
     toast.success("Bill generated successfully!");
 
     try {
-        await fetch("http://localhost:5000/api/bills", {
+        await fetch("http://localhost:5001/api/bills", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(generatedBill)

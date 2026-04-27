@@ -18,7 +18,7 @@ const Visitors = () => {
 
   const fetchVisitors = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/visitors");
+      const response = await fetch("http://localhost:5001/api/visitors");
       if (!response.ok) throw new Error("Server response not ok");
       const data = await response.json();
       setVisitors(data);
@@ -66,7 +66,7 @@ const Visitors = () => {
     toast.success("Visitor entry logged!");
 
     try {
-        await fetch("http://localhost:5000/api/visitors", {
+        await fetch("http://localhost:5001/api/visitors", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(newVisitor)

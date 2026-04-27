@@ -19,7 +19,7 @@ const Notices = () => {
 
   const fetchNotices = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/notices");
+      const response = await fetch("http://localhost:5001/api/notices");
       if (!response.ok) throw new Error("Server response not ok");
       const data = await response.json();
       setNotices(data);
@@ -33,7 +33,7 @@ const Notices = () => {
 
   const handleAddNotice = async (newNotice: any) => {
     try {
-        await fetch("http://localhost:5000/api/notices", {
+        await fetch("http://localhost:5001/api/notices", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({

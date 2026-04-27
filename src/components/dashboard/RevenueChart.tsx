@@ -10,7 +10,7 @@ export const RevenueChart = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/stats/revenue");
+        const response = await fetch("http://localhost:5001/api/stats/revenue");
         const result = await response.json();
         setData(result);
         

@@ -21,7 +21,7 @@ export const RecentActivity = () => {
   const [activity, setActivity] = useState<any[]>([]);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/bills")
+    fetch("http://localhost:5001/api/bills")
       .then(res => res.json())
       .then(data => {
         if (data && data.length > 0) setActivity(data.slice(0, 5));

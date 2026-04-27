@@ -37,7 +37,7 @@ const Residents = () => {
 
   const fetchResidents = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/residents");
+      const response = await fetch("http://localhost:5001/api/residents");
       if (!response.ok) throw new Error("Server response not ok");
       const data = await response.json();
       setResidents(data);
@@ -70,7 +70,7 @@ const Residents = () => {
     }
 
     try {
-        const response = await fetch("http://localhost:5000/api/residents", {
+        const response = await fetch("http://localhost:5001/api/residents", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({

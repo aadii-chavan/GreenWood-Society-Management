@@ -95,10 +95,10 @@ const Index = () => {
     const fetchData = async () => {
       try {
         const [resRes, resBills, resComp, resVisitors] = await Promise.all([
-          fetch("http://localhost:5000/api/residents").then(r => r.ok ? r.json() : []),
-          fetch("http://localhost:5000/api/bills").then(r => r.ok ? r.json() : []),
-          fetch("http://localhost:5000/api/complaints").then(r => r.ok ? r.json() : []),
-          fetch("http://localhost:5000/api/visitors").then(r => r.ok ? r.json() : [])
+          fetch("http://localhost:5001/api/residents").then(r => r.ok ? r.json() : []),
+          fetch("http://localhost:5001/api/bills").then(r => r.ok ? r.json() : []),
+          fetch("http://localhost:5001/api/complaints").then(r => r.ok ? r.json() : []),
+          fetch("http://localhost:5001/api/visitors").then(r => r.ok ? r.json() : [])
         ]);
         
         const fetchedData = {

@@ -22,7 +22,7 @@ const Complaints = () => {
 
   const fetchComplaints = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/complaints");
+      const response = await fetch("http://localhost:5001/api/complaints");
       if (!response.ok) throw new Error("Server response not ok");
       const data = await response.json();
       setComplaints(data);
@@ -64,7 +64,7 @@ const Complaints = () => {
     toast.success("Complaint logged!");
 
     try {
-        await fetch("http://localhost:5000/api/complaints", {
+        await fetch("http://localhost:5001/api/complaints", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(newComplaint)
