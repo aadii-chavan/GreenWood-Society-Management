@@ -13,12 +13,6 @@ import { GenerateBillDialog } from "@/components/dashboard/GenerateBillDialog";
 import { NewComplaintDialog } from "@/components/dashboard/NewComplaintDialog";
 import { AddVisitorDialog } from "@/components/dashboard/AddVisitorDialog";
 import { AddNoticeDialog } from "@/components/dashboard/AddNoticeDialog";
-import { 
-  MOCK_RESIDENTS, 
-  MOCK_BILLS, 
-  MOCK_COMPLAINTS, 
-  MOCK_VISITORS 
-} from "@/lib/mockData";
 import { toast } from "sonner";
 import { 
   DropdownMenu,
@@ -101,10 +95,10 @@ const Index = () => {
     const fetchData = async () => {
       try {
         const [resRes, resBills, resComp, resVisitors] = await Promise.all([
-          fetch("http://localhost:5000/api/residents").then(r => r.ok ? r.json() : MOCK_RESIDENTS),
-          fetch("http://localhost:5000/api/bills").then(r => r.ok ? r.json() : MOCK_BILLS),
-          fetch("http://localhost:5000/api/complaints").then(r => r.ok ? r.json() : MOCK_COMPLAINTS),
-          fetch("http://localhost:5000/api/visitors").then(r => r.ok ? r.json() : MOCK_VISITORS)
+          fetch("http://localhost:5000/api/residents").then(r => r.ok ? r.json() : []),
+          fetch("http://localhost:5000/api/bills").then(r => r.ok ? r.json() : []),
+          fetch("http://localhost:5000/api/complaints").then(r => r.ok ? r.json() : []),
+          fetch("http://localhost:5000/api/visitors").then(r => r.ok ? r.json() : [])
         ]);
         
         const fetchedData = {
@@ -116,12 +110,12 @@ const Index = () => {
         setData(fetchedData);
         calculateStats(fetchedData, timeRange);
       } catch (error) {
-        console.warn("Backend not reached for stats, using mock data fallback.");
+        console.warn("Backend not reached for stats, using empty data.");
         const fallbackData = {
-          residents: MOCK_RESIDENTS,
-          bills: MOCK_BILLS,
-          complaints: MOCK_COMPLAINTS,
-          visitors: MOCK_VISITORS
+          residents: [],
+          bills: [],
+          complaints: [],
+          visitors: []
         };
         setData(fallbackData);
         calculateStats(fallbackData, timeRange);

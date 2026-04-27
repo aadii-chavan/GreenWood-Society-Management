@@ -3,7 +3,6 @@ import { CrudPage } from "@/components/layout/CrudPage";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { Mail, Phone, MoreHorizontal, Search, UserPlus, Pencil, Trash2 } from "lucide-react";
-import { MOCK_RESIDENTS } from "@/lib/mockData";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -44,8 +43,8 @@ const Residents = () => {
       setResidents(data);
       setLoading(false);
     } catch (error) {
-      console.warn("Backend not reached, using mock residents:", error);
-      setResidents(MOCK_RESIDENTS);
+      console.warn("Backend not reached, showing empty residents list.");
+      setResidents([]);
       setLoading(false);
     }
   };

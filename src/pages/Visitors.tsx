@@ -5,7 +5,6 @@ import { StatCard } from "@/components/ui/StatCard";
 import { UserPlus, LogIn, LogOut, Car, LogOut as CheckoutIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AddVisitorDialog } from "@/components/dashboard/AddVisitorDialog";
-import { MOCK_VISITORS } from "@/lib/mockData";
 import { toast } from "sonner";
 
 const Visitors = () => {
@@ -25,8 +24,8 @@ const Visitors = () => {
       setVisitors(data);
       setLoading(false);
     } catch (error) {
-      console.warn("Backend not reached, using mock visitors:", error);
-      setVisitors(MOCK_VISITORS);
+      console.warn("Backend not reached, showing empty visitors list.");
+      setVisitors([]);
       setLoading(false);
     }
   };

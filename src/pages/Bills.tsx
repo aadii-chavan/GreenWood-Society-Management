@@ -13,7 +13,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { GenerateBillDialog } from "@/components/dashboard/GenerateBillDialog";
-import { MOCK_BILLS } from "@/lib/mockData";
 import { toast } from "sonner";
 
 const Bills = () => {
@@ -33,8 +32,8 @@ const Bills = () => {
       setBills(data);
       setLoading(false);
     } catch (error) {
-      console.warn("Backend not reached, using mock bills:", error);
-      setBills(MOCK_BILLS);
+      console.warn("Backend not reached, showing empty bills list.");
+      setBills([]);
       setLoading(false);
     }
   };

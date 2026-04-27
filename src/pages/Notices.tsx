@@ -3,7 +3,6 @@ import { CrudPage } from "@/components/layout/CrudPage";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { Pin, Calendar } from "lucide-react";
 import { AddNoticeDialog } from "@/components/dashboard/AddNoticeDialog";
-import { MOCK_NOTICES } from "@/lib/mockData";
 import { toast } from "sonner";
 
 const tagTone = (t: string) =>
@@ -26,8 +25,8 @@ const Notices = () => {
       setNotices(data);
       setLoading(false);
     } catch (error) {
-      console.warn("Backend not reached, using mock notices:", error);
-      setNotices(MOCK_NOTICES);
+      console.warn("Backend not reached, showing empty notices list.");
+      setNotices([]);
       setLoading(false);
     }
   };

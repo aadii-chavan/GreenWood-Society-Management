@@ -5,7 +5,6 @@ import { MessageSquareWarning, Clock, CheckCircle2, Check } from "lucide-react";
 import { StatCard } from "@/components/ui/StatCard";
 import { Button } from "@/components/ui/button";
 import { NewComplaintDialog } from "@/components/dashboard/NewComplaintDialog";
-import { MOCK_COMPLAINTS } from "@/lib/mockData";
 import { toast } from "sonner";
 
 const pTone = (p: string) => p === "high" ? "destructive" : p === "medium" ? "warning" : "info";
@@ -29,8 +28,8 @@ const Complaints = () => {
       setComplaints(data);
       setLoading(false);
     } catch (error) {
-      console.warn("Backend not reached, using mock complaints:", error);
-      setComplaints(MOCK_COMPLAINTS);
+      console.warn("Backend not reached, showing empty complaints list.");
+      setComplaints([]);
       setLoading(false);
     }
   };
