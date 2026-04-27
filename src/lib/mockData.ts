@@ -7,7 +7,7 @@ export const MOCK_RESIDENTS = [
     unit_number: "B-1204",
     resident_type: "Owner",
     status: "active",
-    joined_date: "2024-01-15",
+    joined_date: "2026-04-15",
   },
   {
     id: 2,
@@ -17,7 +17,7 @@ export const MOCK_RESIDENTS = [
     unit_number: "A-301",
     resident_type: "Tenant",
     status: "active",
-    joined_date: "2024-02-10",
+    joined_date: "2026-04-10",
   },
   {
     id: 3,
@@ -84,7 +84,7 @@ export const MOCK_COMPLAINTS = [
     category: "Plumbing",
     priority: "high",
     status: "open",
-    created_at: "2024-04-26T10:00:00Z",
+    created_at: "2026-04-26T10:00:00Z",
   },
   {
     id: "#C-0422",
@@ -93,7 +93,7 @@ export const MOCK_COMPLAINTS = [
     category: "Maintenance",
     priority: "medium",
     status: "progress",
-    created_at: "2024-04-25T09:30:00Z",
+    created_at: "2026-04-25T09:30:00Z",
   },
   {
     id: "#C-0423",
@@ -102,7 +102,7 @@ export const MOCK_COMPLAINTS = [
     category: "Security",
     priority: "low",
     status: "resolved",
-    created_at: "2024-04-24T22:15:00Z",
+    created_at: "2026-04-24T22:15:00Z",
   }
 ];
 

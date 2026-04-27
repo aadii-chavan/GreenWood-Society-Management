@@ -2,8 +2,16 @@ import { useState, useEffect } from "react";
 import { CrudPage } from "@/components/layout/CrudPage";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { Button } from "@/components/ui/button";
-import { Mail, Phone, MoreHorizontal, Search, UserPlus } from "lucide-react";
+import { Mail, Phone, MoreHorizontal, Search, UserPlus, Pencil, Trash2 } from "lucide-react";
 import { MOCK_RESIDENTS } from "@/lib/mockData";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   Dialog,
   DialogContent,
@@ -85,6 +93,11 @@ const Residents = () => {
     } catch (error) {
         toast.error("Failed to add resident");
     }
+  };
+
+  const handleDeleteResident = (id: number, name: string) => {
+    setResidents(prev => prev.filter(r => r.id !== id));
+    toast.success(`${name} has been removed.`);
   };
 
   const handleExport = () => {
@@ -171,9 +184,30 @@ const Residents = () => {
                     </StatusBadge>
                   </td>
                   <td className="px-5 py-4 text-right">
-                    <Button variant="ghost" size="icon" className="rounded-full">
-                      <MoreHorizontal className="h-4 w-4" />
-                    </Button>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon" className="rounded-full">
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="rounded-xl border-border/60 w-40">
+                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem className="gap-2 cursor-pointer" onClick={() => toast.info("Edit resident coming soon!")}>
+                          <Pencil className="h-3.5 w-3.5" /> Edit details
+                        </DropdownMenuItem>
+                        <DropdownMenuItem className="gap-2 cursor-pointer" onClick={() => toast.info("Contact resident...")}>
+                          <Mail className="h-3.5 w-3.5" /> Send Email
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem 
+                          className="gap-2 cursor-pointer text-destructive focus:text-destructive focus:bg-destructive/10"
+                          onClick={() => handleDeleteResident(r.id, r.full_name)}
+                        >
+                          <Trash2 className="h-3.5 w-3.5" /> Delete resident
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </td>
                 </tr>
               ))}

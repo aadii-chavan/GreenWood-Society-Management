@@ -13,8 +13,6 @@ import { GenerateBillDialog } from "@/components/dashboard/GenerateBillDialog";
 import { NewComplaintDialog } from "@/components/dashboard/NewComplaintDialog";
 import { AddVisitorDialog } from "@/components/dashboard/AddVisitorDialog";
 import { AddNoticeDialog } from "@/components/dashboard/AddNoticeDialog";
-import { DashboardCalendar } from "@/components/dashboard/DashboardCalendar";
-import { Calendar as CalendarIcon } from "lucide-react";
 import { 
   MOCK_RESIDENTS, 
   MOCK_BILLS, 
@@ -22,18 +20,85 @@ import {
   MOCK_VISITORS 
 } from "@/lib/mockData";
 import { toast } from "sonner";
+import { 
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { 
+  isSameMonth, 
+  parseISO, 
+  parse, 
+  isValid 
+} from "date-fns";
+
+const parseDateString = (dateStr: string) => {
+  if (!dateStr) return new Date(0);
+  if (dateStr.includes('T')) return parseISO(dateStr);
+  if (dateStr.match(/^\d{4}-\d{2}-\d{2}$/)) return parseISO(dateStr);
+  
+  // Try DD MMM YYYY
+  const d = parse(dateStr, 'dd MMM yyyy', new Date());
+  if (isValid(d)) return d;
+  
+  return new Date(0);
+};
 
 const Index = () => {
+  const [timeRange, setTimeRange] = useState<'this-month' | 'all-time'>('this-month');
+  const [data, setData] = useState({
+    residents: [] as any[],
+    bills: [] as any[],
+    complaints: [] as any[],
+    visitors: [] as any[]
+  });
   const [stats, setStats] = useState({
     residents: 0,
     pendingBills: 0,
     activeComplaints: 0,
     visitors: 0,
-    outstandingAmount: 0
+    outstandingAmount: 0,
+    residentDelta: "+0",
+    billDelta: "+0",
+    complaintDelta: "+0",
+    visitorDelta: "+0"
   });
 
+  const calculateStats = (rawData: any, range: 'this-month' | 'all-time') => {
+    const now = new Date("2026-04-27"); // Current simulated date
+    
+    let filteredResidents = rawData.residents;
+    let filteredBills = rawData.bills;
+    let filteredComplaints = rawData.complaints;
+    let filteredVisitors = rawData.visitors;
+
+    if (range === 'this-month') {
+      filteredResidents = rawData.residents.filter((r: any) => isSameMonth(parseDateString(r.joined_date), now));
+      filteredBills = rawData.bills.filter((b: any) => isSameMonth(parseDateString(b.due_date), now));
+      filteredComplaints = rawData.complaints.filter((c: any) => isSameMonth(parseDateString(c.created_at), now));
+      // For visitors, mock entry_time is just time, so we assume today (this month)
+      filteredVisitors = rawData.visitors;
+    }
+
+    const pending = filteredBills.filter((b: any) => b.status === 'pending' || b.status === 'overdue');
+    const totalOutstanding = pending.reduce((sum: number, b: any) => sum + Number(b.amount), 0);
+
+    setStats({
+      residents: filteredResidents.length,
+      pendingBills: pending.length,
+      activeComplaints: filteredComplaints.filter((c: any) => c.status !== 'resolved').length,
+      visitors: filteredVisitors.length,
+      outstandingAmount: totalOutstanding,
+      residentDelta: range === 'this-month' ? `+${filteredResidents.length}` : "+0",
+      billDelta: range === 'this-month' ? `+${pending.length}` : "+0",
+      complaintDelta: range === 'this-month' ? `+${filteredComplaints.length}` : "+0",
+      visitorDelta: "+0"
+    });
+  };
+
   useEffect(() => {
-    const fetchStats = async () => {
+    const fetchData = async () => {
       try {
         const [resRes, resBills, resComp, resVisitors] = await Promise.all([
           fetch("http://localhost:5000/api/residents").then(r => r.ok ? r.json() : MOCK_RESIDENTS),
@@ -42,44 +107,39 @@ const Index = () => {
           fetch("http://localhost:5000/api/visitors").then(r => r.ok ? r.json() : MOCK_VISITORS)
         ]);
         
-        const residents = resRes;
-        const bills = resBills;
-        const complaints = resComp;
-        const visitors = resVisitors;
-        
-        const pending = bills.filter((b: any) => b.status === 'pending');
-        const totalOutstanding = pending.reduce((sum: number, b: any) => sum + Number(b.amount), 0);
-
-        setStats({
-          residents: residents.length,
-          pendingBills: pending.length,
-          activeComplaints: complaints.filter((c: any) => c.status !== 'resolved').length,
-          visitors: visitors.length,
-          outstandingAmount: totalOutstanding
-        });
+        const fetchedData = {
+          residents: resRes,
+          bills: resBills,
+          complaints: resComp,
+          visitors: resVisitors
+        };
+        setData(fetchedData);
+        calculateStats(fetchedData, timeRange);
       } catch (error) {
         console.warn("Backend not reached for stats, using mock data fallback.");
-        const pending = MOCK_BILLS.filter((b: any) => b.status === 'pending');
-        const totalOutstanding = pending.reduce((sum: number, b: any) => sum + Number(b.amount), 0);
-        
-        setStats({
-          residents: MOCK_RESIDENTS.length,
-          pendingBills: pending.length,
-          activeComplaints: MOCK_COMPLAINTS.filter((c: any) => c.status !== 'resolved').length,
-          visitors: MOCK_VISITORS.length,
-          outstandingAmount: totalOutstanding
-        });
+        const fallbackData = {
+          residents: MOCK_RESIDENTS,
+          bills: MOCK_BILLS,
+          complaints: MOCK_COMPLAINTS,
+          visitors: MOCK_VISITORS
+        };
+        setData(fallbackData);
+        calculateStats(fallbackData, timeRange);
       }
     };
-    fetchStats();
+    fetchData();
   }, []);
+
+  useEffect(() => {
+    if (data.residents.length > 0 || data.bills.length > 0) {
+      calculateStats(data, timeRange);
+    }
+  }, [timeRange, data]);
   const [isAddResidentOpen, setIsAddResidentOpen] = useState(false);
   const [isGenerateBillOpen, setIsGenerateBillOpen] = useState(false);
   const [isNewComplaintOpen, setIsNewComplaintOpen] = useState(false);
   const [isVisitorEntryOpen, setIsVisitorEntryOpen] = useState(false);
   const [isPostNoticeOpen, setIsPostNoticeOpen] = useState(false);
-
-  const [isCalendarVisible, setIsCalendarVisible] = useState(false);
 
   const handleAction = (name: string) => {
     toast.info(`${name} action enabled! Form coming soon.`);
@@ -90,22 +150,24 @@ const Index = () => {
       <PageHeader
         eyebrow="Overview"
         title="Dashboard"
-        subtitle="Welcome back, Aarav — here's what's happening at Greenwood today."
+        subtitle="Welcome back, ADITYA CHAVAN — here's what's happening at Greenwood today."
         actions={
           <>
-            <Button 
-              variant="outline" 
-              onClick={() => setIsCalendarVisible(!isCalendarVisible)}
-              className={cn(
-                "rounded-lg h-10 px-4 text-[13px] font-semibold border-border bg-card transition-all",
-                isCalendarVisible ? "text-primary border-primary/40 bg-primary/5" : "hover:bg-accent"
-              )}
-            >
-              <CalendarIcon className="h-4 w-4 mr-2" /> Calendar
-            </Button>
-            <Button variant="outline" className="rounded-lg h-10 px-4 text-[13px] font-semibold border-border bg-card hover:bg-accent">
-              <Filter className="h-4 w-4 mr-2" /> This month
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="rounded-lg h-10 px-4 text-[13px] font-semibold border-border bg-card hover:bg-accent capitalize">
+                  <Filter className="h-4 w-4 mr-2" /> {timeRange.replace('-', ' ')}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-40">
+                <DropdownMenuItem onClick={() => setTimeRange('this-month')}>
+                  This month
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setTimeRange('all-time')}>
+                  All time
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             <Button 
               onClick={() => setIsAddResidentOpen(true)}
               className="rounded-lg h-10 px-4 text-[13px] font-semibold bg-primary hover:bg-primary/90 shadow-glow"
@@ -120,10 +182,10 @@ const Index = () => {
       <div className="flex flex-col gap-5">
         {/* Top Row: Chart & Actions */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-          <StatCard highlight label="Total Residents" value={stats.residents.toString()} icon={Users} delta="+0" helper="this month" />
-          <StatCard label="Pending Bills" value={stats.pendingBills.toString()} icon={IndianRupee} delta="+0" helper={`₹${(stats.outstandingAmount/1000).toFixed(1)}K outstanding`} />
-          <StatCard label="Active Complaints" value={stats.activeComplaints.toString()} icon={MessageSquareWarning} delta="+0" helper="needs attention" />
-          <StatCard label="Gate Entries" value={stats.visitors.toString()} icon={ShieldCheck} delta="+0" helper="today" />
+          <StatCard highlight label="Total Residents" value={stats.residents.toString()} icon={Users} delta={stats.residentDelta} helper={timeRange === 'this-month' ? "joined this month" : "total active"} />
+          <StatCard label="Pending Bills" value={stats.pendingBills.toString()} icon={IndianRupee} delta={stats.billDelta} helper={timeRange === 'this-month' ? "issued this month" : `₹${(stats.outstandingAmount/1000).toFixed(1)}K outstanding`} />
+          <StatCard label="Active Complaints" value={stats.activeComplaints.toString()} icon={MessageSquareWarning} delta={stats.complaintDelta} helper={timeRange === 'this-month' ? "reported this month" : "needs attention"} />
+          <StatCard label="Gate Entries" value={stats.visitors.toString()} icon={ShieldCheck} delta={stats.visitorDelta} helper="today" />
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
           <div className="lg:col-span-2">
@@ -137,32 +199,6 @@ const Index = () => {
               onVisitorEntry={() => setIsVisitorEntryOpen(true)}
             />
           </div>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-          <div className="lg:col-span-2">
-            <RevenueChart />
-          </div>
-          <div className="lg:col-span-1">
-            <QuickActions 
-              onAddResident={() => setIsAddResidentOpen(true)}
-              onGenerateBill={() => setIsGenerateBillOpen(true)}
-              onPostNotice={() => setIsPostNoticeOpen(true)}
-              onVisitorEntry={() => setIsVisitorEntryOpen(true)}
-            />
-          </div>
-        </div>
-
-        {/* Dynamic Row: Calendar & Activity */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-          <div className={cn("transition-all duration-500 ease-in-out", isCalendarVisible ? "lg:col-span-2" : "lg:col-span-3")}>
-             <RecentActivity />
-          </div>
-          {isCalendarVisible && (
-            <div className="lg:col-span-1 animate-in fade-in slide-in-from-right-4 duration-500">
-              <DashboardCalendar />
-            </div>
-          )}
         </div>
       </div>
 

@@ -37,10 +37,10 @@ export const Topbar = ({ title }: TopbarProps) => {
 
         <div className="flex items-center gap-3 pl-1.5 pr-3 h-12 rounded-xl bg-card border border-border/70 shadow-xs hover:bg-accent/50 transition-colors cursor-pointer">
           <div className="h-9 w-9 rounded-lg gradient-primary flex items-center justify-center text-primary-foreground font-semibold text-[12.5px]">
-            AR
+            AC
           </div>
           <div className="hidden sm:block leading-tight">
-            <p className="text-[13px] font-semibold">Aarav Reddy</p>
+            <p className="text-[13px] font-semibold">ADITYA CHAVAN</p>
             <p className="text-[11px] text-muted-foreground">admin@greenwood.in</p>
           </div>
           <ChevronDown className="h-3.5 w-3.5 text-muted-foreground hidden sm:block" />

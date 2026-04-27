@@ -58,7 +58,7 @@ const Settings = () => {
                 <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label className="text-[13px] font-semibold">Full Name</Label>
-                    <Input defaultValue="Aarav Reddy" className="bg-secondary/30" />
+                    <Input defaultValue="ADITYA CHAVAN" className="bg-secondary/30" />
                   </div>
                   <div className="space-y-2">
                     <Label className="text-[13px] font-semibold">Email Address</Label>

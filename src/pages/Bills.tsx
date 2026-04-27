@@ -3,7 +3,15 @@ import { CrudPage } from "@/components/layout/CrudPage";
 import { StatCard } from "@/components/ui/StatCard";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { Button } from "@/components/ui/button";
-import { IndianRupee, Receipt, AlertCircle, MoreHorizontal, CheckCircle2 } from "lucide-react";
+import { IndianRupee, Receipt, AlertCircle, MoreHorizontal, CheckCircle2, Trash2, FileText, Send } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { GenerateBillDialog } from "@/components/dashboard/GenerateBillDialog";
 import { MOCK_BILLS } from "@/lib/mockData";
 import { toast } from "sonner";
@@ -77,6 +85,11 @@ const Bills = () => {
     if (status === "paid") return "success";
     if (status === "pending") return "warning";
     return "destructive";
+  };
+
+  const handleDeleteBill = (id: string) => {
+    setBills(prev => prev.filter(b => b.id !== id));
+    toast.success(`Invoice ${id} has been deleted.`);
   };
 
   const handleExport = () => {
@@ -153,7 +166,32 @@ const Bills = () => {
                     </div>
                   </td>
                   <td className="px-5 py-4 text-right">
-                    <Button variant="ghost" size="icon" className="rounded-full"><MoreHorizontal className="h-4 w-4" /></Button>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon" className="rounded-full">
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="rounded-xl border-border/60 w-48">
+                        <DropdownMenuLabel>Invoice Options</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem className="gap-2 cursor-pointer" onClick={() => toast.info("Viewing invoice...")}>
+                          <FileText className="h-3.5 w-3.5" /> View Invoice
+                        </DropdownMenuItem>
+                        {b.status !== "paid" && (
+                          <DropdownMenuItem className="gap-2 cursor-pointer" onClick={() => toast.info("Reminder sent!")}>
+                            <Send className="h-3.5 w-3.5" /> Send Reminder
+                          </DropdownMenuItem>
+                        )}
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem 
+                          className="gap-2 cursor-pointer text-destructive focus:text-destructive focus:bg-destructive/10"
+                          onClick={() => handleDeleteBill(b.id)}
+                        >
+                          <Trash2 className="h-3.5 w-3.5" /> Delete Invoice
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </td>
                 </tr>
               ))}
