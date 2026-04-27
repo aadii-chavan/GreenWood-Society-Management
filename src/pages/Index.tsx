@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { cn } from "@/lib/utils";
 import { StatCard } from "@/components/ui/StatCard";
 import { Users, IndianRupee, MessageSquareWarning, ShieldCheck, Plus, Filter } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
@@ -12,6 +13,8 @@ import { GenerateBillDialog } from "@/components/dashboard/GenerateBillDialog";
 import { NewComplaintDialog } from "@/components/dashboard/NewComplaintDialog";
 import { AddVisitorDialog } from "@/components/dashboard/AddVisitorDialog";
 import { AddNoticeDialog } from "@/components/dashboard/AddNoticeDialog";
+import { DashboardCalendar } from "@/components/dashboard/DashboardCalendar";
+import { Calendar as CalendarIcon } from "lucide-react";
 import { 
   MOCK_RESIDENTS, 
   MOCK_BILLS, 
@@ -76,6 +79,8 @@ const Index = () => {
   const [isVisitorEntryOpen, setIsVisitorEntryOpen] = useState(false);
   const [isPostNoticeOpen, setIsPostNoticeOpen] = useState(false);
 
+  const [isCalendarVisible, setIsCalendarVisible] = useState(false);
+
   const handleAction = (name: string) => {
     toast.info(`${name} action enabled! Form coming soon.`);
   };
@@ -88,6 +93,16 @@ const Index = () => {
         subtitle="Welcome back, Aarav — here's what's happening at Greenwood today."
         actions={
           <>
+            <Button 
+              variant="outline" 
+              onClick={() => setIsCalendarVisible(!isCalendarVisible)}
+              className={cn(
+                "rounded-lg h-10 px-4 text-[13px] font-semibold border-border bg-card transition-all",
+                isCalendarVisible ? "text-primary border-primary/40 bg-primary/5" : "hover:bg-accent"
+              )}
+            >
+              <CalendarIcon className="h-4 w-4 mr-2" /> Calendar
+            </Button>
             <Button variant="outline" className="rounded-lg h-10 px-4 text-[13px] font-semibold border-border bg-card hover:bg-accent">
               <Filter className="h-4 w-4 mr-2" /> This month
             </Button>
@@ -124,9 +139,30 @@ const Index = () => {
           </div>
         </div>
 
-        {/* Bottom Row: Full Width Activity */}
-        <div className="w-full">
-          <RecentActivity />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+          <div className="lg:col-span-2">
+            <RevenueChart />
+          </div>
+          <div className="lg:col-span-1">
+            <QuickActions 
+              onAddResident={() => setIsAddResidentOpen(true)}
+              onGenerateBill={() => setIsGenerateBillOpen(true)}
+              onPostNotice={() => setIsPostNoticeOpen(true)}
+              onVisitorEntry={() => setIsVisitorEntryOpen(true)}
+            />
+          </div>
+        </div>
+
+        {/* Dynamic Row: Calendar & Activity */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+          <div className={cn("transition-all duration-500 ease-in-out", isCalendarVisible ? "lg:col-span-2" : "lg:col-span-3")}>
+             <RecentActivity />
+          </div>
+          {isCalendarVisible && (
+            <div className="lg:col-span-1 animate-in fade-in slide-in-from-right-4 duration-500">
+              <DashboardCalendar />
+            </div>
+          )}
         </div>
       </div>
 

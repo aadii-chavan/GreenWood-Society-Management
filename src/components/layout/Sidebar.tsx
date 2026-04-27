@@ -14,9 +14,9 @@ import { toast } from "sonner";
 
 const mainNav = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard, end: true },
-  { to: "/residents", label: "Residents", icon: Users, badge: "248" },
+  { to: "/residents", label: "Residents", icon: Users },
   { to: "/bills", label: "Bills", icon: Receipt },
-  { to: "/complaints", label: "Complaints", icon: MessageSquareWarning, badge: "12" },
+  { to: "/complaints", label: "Complaints", icon: MessageSquareWarning },
   { to: "/visitors", label: "Visitors", icon: UserPlus },
   { to: "/notices", label: "Notices", icon: Megaphone },
 ];
